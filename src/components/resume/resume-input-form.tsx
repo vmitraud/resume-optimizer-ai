@@ -79,9 +79,9 @@ export function ResumeInputForm({
         body: formData,
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
 
-      if (!response.ok) {
+      if (!response.ok || !data) {
         throw new Error(data?.error ?? form.uploadErrorFallback);
       }
 

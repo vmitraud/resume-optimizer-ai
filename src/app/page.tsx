@@ -68,9 +68,9 @@ export default function Home() {
         body: JSON.stringify({ resumeText, jobDescription, language }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
 
-      if (!response.ok) {
+      if (!response.ok || !data) {
         throw new Error(data?.error ?? page.optimizeErrorFallback);
       }
 

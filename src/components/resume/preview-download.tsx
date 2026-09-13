@@ -51,7 +51,7 @@ export function PreviewDownload({
     setIsRedirecting(true);
     try {
       const response = await fetch("/api/checkout", { method: "POST" });
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
       if (!response.ok || !data?.url) {
         throw new Error(data?.error ?? preview.checkoutFailFallback);
       }
@@ -68,7 +68,7 @@ export function PreviewDownload({
     setIsRedirecting(true);
     try {
       const response = await fetch("/api/billing-portal", { method: "POST" });
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
       if (!response.ok || !data?.url) {
         throw new Error(data?.error ?? preview.billingFailFallback);
       }
