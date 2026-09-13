@@ -117,7 +117,11 @@ export default function Home() {
         ) : null}
         {step === "input" ? (
           <div className="mx-auto w-full max-w-4xl space-y-6">
-            <ResumeInputForm onSubmit={handleSubmit} errorMessage={error} />
+            <ResumeInputForm
+              onSubmit={handleSubmit}
+              errorMessage={error}
+              isSubscribed={isSubscribed}
+            />
             {!isSubscribed && freeOptimizationsLeft <= 0 ? (
               <PlanStatusCard
                 freeOptimizationsLeft={freeOptimizationsLeft}

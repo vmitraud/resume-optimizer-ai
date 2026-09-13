@@ -171,13 +171,13 @@ export function PreviewDownload({
                       type="button"
                       onClick={() => setTemplateId(key)}
                       className={cn(
-                        "relative flex flex-col items-center gap-1 rounded-md border px-2 py-2 text-xs font-medium transition-colors",
+                        "relative flex flex-col items-center gap-1 rounded-md border px-2 py-2.5 text-xs font-medium transition-all",
                         templateId === key
-                          ? "border-foreground bg-accent"
-                          : "border-border hover:bg-accent/50",
+                          ? "border-foreground bg-accent shadow-sm"
+                          : "border-border hover:border-foreground/30 hover:bg-accent/50 hover:shadow-sm",
                       )}
                     >
-                      {template.isPremium ? (
+                      {template.isPremium && !isSubscribed ? (
                         <Lock className="absolute top-1 right-1 h-3 w-3 text-muted-foreground" />
                       ) : null}
                       {template.name}
@@ -250,8 +250,8 @@ export function PreviewDownload({
               {isSubscribed ? preview.downloadDocx : preview.downloadDocxPro}
             </Button>
             <Button
-              variant="outline"
-              className="w-full"
+              variant="ghost"
+              className="w-full text-muted-foreground"
               onClick={onStartOver}
             >
               <RotateCcw className="h-4 w-4" />

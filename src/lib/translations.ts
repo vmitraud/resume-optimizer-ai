@@ -40,6 +40,7 @@ export const translations = {
       cardTitle: "Paste your details below",
       cardDescription:
         "The more complete the text, the better the optimization. No need to format it — just paste the content.",
+      outputLanguage: "Generate resume in",
       resumeLabel: "Current Resume",
       uploadButton: "Upload file",
       resumePlaceholder:
@@ -164,6 +165,7 @@ export const translations = {
       cardTitle: "Cole seus dados abaixo",
       cardDescription:
         "Quanto mais completo o texto, melhor a otimização. Não é necessário formatar — apenas cole o conteúdo.",
+      outputLanguage: "Gerar currículo em",
       resumeLabel: "Currículo Atual",
       uploadButton: "Enviar arquivo",
       resumePlaceholder:
@@ -288,6 +290,7 @@ export const translations = {
       cardTitle: "Fügen Sie Ihre Angaben unten ein",
       cardDescription:
         "Je vollständiger der Text, desto besser die Optimierung. Keine Formatierung nötig — fügen Sie einfach den Inhalt ein.",
+      outputLanguage: "Lebenslauf erstellen in",
       resumeLabel: "Aktueller Lebenslauf",
       uploadButton: "Datei hochladen",
       resumePlaceholder:

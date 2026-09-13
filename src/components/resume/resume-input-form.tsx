@@ -10,6 +10,8 @@ import {
   Pencil,
   X,
   CheckCircle2,
+  Globe,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,12 +25,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useLanguage } from "@/components/language-provider";
+import { LANGUAGES, Language } from "@/lib/language";
 
 interface ResumeInputFormProps {
   onSubmit: (resumeText: string, jobDescription: string) => void;
   disabled?: boolean;
   errorMessage?: string | null;
+  isSubscribed: boolean;
 }
 
 const MIN_LENGTH = 50;
@@ -44,8 +55,9 @@ export function ResumeInputForm({
   onSubmit,
   disabled,
   errorMessage,
+  isSubscribed,
 }: ResumeInputFormProps) {
-  const { t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const form = t("form");
   const [resumeText, setResumeText] = useState("");
   const [jobDescription, setJobDescription] = useState("");
@@ -302,15 +314,44 @@ export function ResumeInputForm({
             </div>
           </div>
 
-          <Button
-            type="submit"
-            size="lg"
-            className="w-full sm:w-auto"
-            disabled={disabled || isUploading}
-          >
-            <Sparkles className="h-4 w-4" />
-            {form.submit}
-          </Button>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2">
+              <Label htmlFor="outputLanguage" className="flex items-center gap-2 text-sm">
+                <Globe className="h-4 w-4" />
+                {form.outputLanguage}
+              </Label>
+              <Select
+                value={language}
+                onValueChange={(value) => setLanguage(value as Language)}
+              >
+                <SelectTrigger id="outputLanguage" size="sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(LANGUAGES) as Language[]).map((key) => (
+                    <SelectItem key={key} value={key}>
+                      <span className="flex items-center gap-1.5">
+                        {LANGUAGES[key].label}
+                        {key !== "en" && !isSubscribed ? (
+                          <Lock className="h-3 w-3 text-muted-foreground" />
+                        ) : null}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full sm:w-auto"
+              disabled={disabled || isUploading}
+            >
+              <Sparkles className="h-4 w-4" />
+              {form.submit}
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>
