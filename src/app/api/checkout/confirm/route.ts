@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
-import { SUBSCRIPTION_COOKIE_NAME, createSubscriptionCookieValue } from "@/lib/subscription-cookie";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 
@@ -21,31 +21,32 @@ export async function GET(request: Request) {
     const subscription = session.subscription;
     const customerId =
       typeof session.customer === "string" ? session.customer : session.customer?.id;
+    const userId = session.client_reference_id;
 
     if (
       session.payment_status !== "paid" ||
       !subscription ||
       typeof subscription === "string" ||
-      !customerId
+      !customerId ||
+      !userId
     ) {
       return NextResponse.redirect(`${origin}/?checkout=error`);
     }
 
-    const cookieValue = createSubscriptionCookieValue({
-      customerId,
-      subscriptionId: subscription.id,
+    const admin = createAdminClient();
+    const { error } = await admin.from("subscriptions").upsert({
+      user_id: userId,
+      stripe_customer_id: customerId,
+      stripe_subscription_id: subscription.id,
+      updated_at: new Date().toISOString(),
     });
 
-    const response = NextResponse.redirect(`${origin}/?checkout=success`);
-    response.cookies.set(SUBSCRIPTION_COOKIE_NAME, cookieValue, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 365,
-      path: "/",
-    });
+    if (error) {
+      console.error("Error saving subscription:", error);
+      return NextResponse.redirect(`${origin}/?checkout=error`);
+    }
 
-    return response;
+    return NextResponse.redirect(`${origin}/?checkout=success`);
   } catch (error) {
     console.error("Error confirming checkout session:", error);
     return NextResponse.redirect(`${origin}/?checkout=error`);

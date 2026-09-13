@@ -28,6 +28,10 @@ export function PlanStatusCard({
     setError(null);
     try {
       const response = await fetch("/api/checkout", { method: "POST" });
+      if (response.status === 401) {
+        window.location.href = "/login";
+        return;
+      }
       const data = await response.json().catch(() => null);
       if (!response.ok || !data?.url) {
         throw new Error(data?.error ?? preview.checkoutFailFallback);

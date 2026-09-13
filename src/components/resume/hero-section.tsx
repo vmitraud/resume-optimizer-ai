@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AccountMenu } from "@/components/account-menu";
 
 interface HeroSectionProps {
   isSubscribed: boolean;
@@ -21,7 +22,8 @@ export function HeroSection({ isSubscribed }: HeroSectionProps) {
 
   return (
     <header className="relative border-b bg-gradient-to-b from-primary/5 to-transparent">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex items-center gap-3">
+        <AccountMenu />
         <Select
           value={language}
           onValueChange={(value) => setLanguage(value as Language)}

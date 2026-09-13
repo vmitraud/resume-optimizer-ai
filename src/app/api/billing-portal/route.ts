@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { stripe } from "@/lib/stripe";
-import { SUBSCRIPTION_COOKIE_NAME, parseSubscriptionCookieValue } from "@/lib/subscription-cookie";
+import { getStripeCustomerId } from "@/lib/subscription";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  const cookieStore = await cookies();
-  const cookieValue = cookieStore.get(SUBSCRIPTION_COOKIE_NAME)?.value;
-  const payload = cookieValue ? parseSubscriptionCookieValue(cookieValue) : null;
+  const customerId = await getStripeCustomerId();
 
-  if (!payload) {
+  if (!customerId) {
     return NextResponse.json(
       { error: "No active subscription found." },
       { status: 401 },
@@ -21,7 +18,7 @@ export async function POST(request: Request) {
 
   try {
     const session = await stripe.billingPortal.sessions.create({
-      customer: payload.customerId,
+      customer: customerId,
       return_url: `${origin}/`,
     });
 
