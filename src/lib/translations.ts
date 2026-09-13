@@ -61,10 +61,10 @@ export const translations = {
       freeLimitReached: "Free limit reached",
       planBadge: "Unlimited Plan",
       subscribedDescription:
-        "You have unlimited optimizations, every template, and DOCX export unlocked.",
+        "You have unlimited optimizations, every template, DOCX export, and every language unlocked.",
       manageSubscription: "Manage subscription",
       unsubscribedDescription:
-        "Unlock unlimited optimizations, more templates, DOCX export, and priority processing for",
+        "Unlock unlimited optimizations, more templates, DOCX export, every language, and priority processing for",
       subscribeButton: "Subscribe to Unlimited Plan",
       pdfFailFallback: "Failed to generate the PDF.",
       docxFailFallback: "Failed to generate the DOCX file.",
@@ -81,6 +81,8 @@ export const translations = {
         "We couldn't confirm your payment. If you were charged, please contact support.",
       freeLimitError:
         "You've used all your free optimizations. Upgrade to the Unlimited Plan to keep going.",
+      languageProRequired:
+        "Generating your resume in Portuguese or German requires the Unlimited Plan. Switch to English, or upgrade to unlock every language.",
       optimizeErrorFallback: "Error optimizing the resume.",
     },
     doc: {
@@ -155,10 +157,10 @@ export const translations = {
       freeLimitReached: "Limite grátis atingido",
       planBadge: "Plano Ilimitado",
       subscribedDescription:
-        "Você tem otimizações ilimitadas, todos os modelos e exportação em DOCX desbloqueados.",
+        "Você tem otimizações ilimitadas, todos os modelos, exportação em DOCX e todos os idiomas desbloqueados.",
       manageSubscription: "Gerenciar assinatura",
       unsubscribedDescription:
-        "Desbloqueie otimizações ilimitadas, mais modelos, exportação em DOCX e processamento prioritário por",
+        "Desbloqueie otimizações ilimitadas, mais modelos, exportação em DOCX, todos os idiomas e processamento prioritário por",
       subscribeButton: "Assinar Plano Ilimitado",
       pdfFailFallback: "Falha ao gerar o PDF.",
       docxFailFallback: "Falha ao gerar o arquivo DOCX.",
@@ -175,6 +177,8 @@ export const translations = {
         "Não conseguimos confirmar seu pagamento. Se você foi cobrado, entre em contato com o suporte.",
       freeLimitError:
         "Você usou todas as suas otimizações grátis. Assine o Plano Ilimitado para continuar.",
+      languageProRequired:
+        "Gerar seu currículo em português ou alemão requer o Plano Ilimitado. Mude para inglês ou assine para desbloquear todos os idiomas.",
       optimizeErrorFallback: "Erro ao otimizar o currículo.",
     },
     doc: {
@@ -250,10 +254,10 @@ export const translations = {
       freeLimitReached: "Kostenloses Limit erreicht",
       planBadge: "Unlimited-Plan",
       subscribedDescription:
-        "Sie haben unbegrenzte Optimierungen, alle Vorlagen und den DOCX-Export freigeschaltet.",
+        "Sie haben unbegrenzte Optimierungen, alle Vorlagen, den DOCX-Export und alle Sprachen freigeschaltet.",
       manageSubscription: "Abo verwalten",
       unsubscribedDescription:
-        "Schalten Sie unbegrenzte Optimierungen, weitere Vorlagen, DOCX-Export und priorisierte Verarbeitung frei für",
+        "Schalten Sie unbegrenzte Optimierungen, weitere Vorlagen, DOCX-Export, alle Sprachen und priorisierte Verarbeitung frei für",
       subscribeButton: "Unlimited-Plan abonnieren",
       pdfFailFallback: "PDF konnte nicht erstellt werden.",
       docxFailFallback: "DOCX-Datei konnte nicht erstellt werden.",
@@ -270,6 +274,8 @@ export const translations = {
         "Wir konnten Ihre Zahlung nicht bestätigen. Falls Sie belastet wurden, kontaktieren Sie bitte den Support.",
       freeLimitError:
         "Sie haben alle kostenlosen Optimierungen aufgebraucht. Upgraden Sie auf den Unlimited-Plan, um fortzufahren.",
+      languageProRequired:
+        "Die Erstellung Ihres Lebenslaufs auf Portugiesisch oder Deutsch erfordert den Unlimited-Plan. Wechseln Sie zu Englisch oder upgraden Sie, um alle Sprachen freizuschalten.",
       optimizeErrorFallback: "Fehler beim Optimieren des Lebenslaufs.",
     },
     doc: {

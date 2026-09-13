@@ -4,6 +4,8 @@ import { ApiError } from "@google/genai";
 import { gemini, OPTIMIZE_MODEL } from "@/lib/gemini";
 import { optimizeRequestSchema, optimizedResumeSchema } from "@/lib/schema";
 import { LANGUAGES } from "@/lib/language";
+import { translations } from "@/lib/translations";
+import { getIsSubscribed } from "@/lib/subscription";
 
 export const runtime = "nodejs";
 
@@ -42,6 +44,16 @@ export async function POST(request: Request) {
   }
 
   const { resumeText, jobDescription, language } = parsedRequest.data;
+
+  if (language !== "en") {
+    const isSubscribed = await getIsSubscribed();
+    if (!isSubscribed) {
+      return NextResponse.json(
+        { error: translations[language].page.languageProRequired },
+        { status: 403 },
+      );
+    }
+  }
 
   try {
     const response = await gemini.models.generateContent({

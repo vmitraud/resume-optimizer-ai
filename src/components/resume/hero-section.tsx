@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
+import { Sparkles, Lock } from "lucide-react";
 import { useLanguage } from "@/components/language-provider";
 import { LANGUAGES, Language } from "@/lib/language";
 import {
@@ -11,7 +11,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  isSubscribed: boolean;
+}
+
+export function HeroSection({ isSubscribed }: HeroSectionProps) {
   const { language, setLanguage, t } = useLanguage();
   const hero = t("hero");
 
@@ -28,7 +32,12 @@ export function HeroSection() {
           <SelectContent>
             {(Object.keys(LANGUAGES) as Language[]).map((key) => (
               <SelectItem key={key} value={key}>
-                {LANGUAGES[key].label}
+                <span className="flex items-center gap-1.5">
+                  {LANGUAGES[key].label}
+                  {key !== "en" && !isSubscribed ? (
+                    <Lock className="h-3 w-3 text-muted-foreground" />
+                  ) : null}
+                </span>
               </SelectItem>
             ))}
           </SelectContent>

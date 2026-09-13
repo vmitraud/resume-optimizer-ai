@@ -59,6 +59,11 @@ export default function Home() {
       return;
     }
 
+    if (!isSubscribed && language !== "en") {
+      setError(page.languageProRequired);
+      return;
+    }
+
     setError(null);
     setStep("loading");
 
@@ -103,7 +108,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <HeroSection />
+      <HeroSection isSubscribed={isSubscribed} />
       <main className="flex flex-1 flex-col justify-center px-4 py-10 sm:py-14">
         {checkoutNotice ? (
           <div className="mx-auto mb-6 w-full max-w-4xl rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
