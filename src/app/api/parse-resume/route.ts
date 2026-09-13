@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import "pdf-parse/worker";
 import { PDFParse } from "pdf-parse";
 import mammoth from "mammoth";
 
@@ -32,6 +31,7 @@ export async function POST(request: Request) {
     let text: string;
 
     if (name.endsWith(".pdf")) {
+      await import("pdf-parse/worker");
       const parser = new PDFParse({ data: buffer });
       const parsed = await parser.getText();
       await parser.destroy();
