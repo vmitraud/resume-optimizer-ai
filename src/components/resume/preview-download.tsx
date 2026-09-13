@@ -22,6 +22,7 @@ import {
 } from "@/lib/schema";
 import { ResumePreview } from "@/components/resume/resume-preview";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/components/language-provider";
 
 interface PreviewDownloadProps {
   resume: OptimizedResume;
@@ -36,6 +37,8 @@ export function PreviewDownload({
   isSubscribed,
   onStartOver,
 }: PreviewDownloadProps) {
+  const { language, t } = useLanguage();
+  const preview = t("preview");
   const [themeColor, setThemeColor] = useState<ThemeColorKey>("blue");
   const [templateId, setTemplateId] = useState<ResumeTemplateKey>("classic");
   const [downloadingFormat, setDownloadingFormat] = useState<"pdf" | "docx" | null>(null);
@@ -50,12 +53,12 @@ export function PreviewDownload({
       const response = await fetch("/api/checkout", { method: "POST" });
       const data = await response.json();
       if (!response.ok || !data?.url) {
-        throw new Error(data?.error ?? "Could not start checkout.");
+        throw new Error(data?.error ?? preview.checkoutFailFallback);
       }
       window.location.href = data.url;
     } catch (error) {
       setDownloadError(
-        error instanceof Error ? error.message : "Could not start checkout.",
+        error instanceof Error ? error.message : preview.checkoutFailFallback,
       );
       setIsRedirecting(false);
     }
@@ -67,12 +70,12 @@ export function PreviewDownload({
       const response = await fetch("/api/billing-portal", { method: "POST" });
       const data = await response.json();
       if (!response.ok || !data?.url) {
-        throw new Error(data?.error ?? "Could not open billing management.");
+        throw new Error(data?.error ?? preview.billingFailFallback);
       }
       window.location.href = data.url;
     } catch (error) {
       setDownloadError(
-        error instanceof Error ? error.message : "Could not open billing management.",
+        error instanceof Error ? error.message : preview.billingFailFallback,
       );
       setIsRedirecting(false);
     }
@@ -93,9 +96,7 @@ export function PreviewDownload({
 
   const handleDownloadPdf = async () => {
     if (isPremiumTemplateLocked) {
-      setDownloadError(
-        `The ${RESUME_TEMPLATES[templateId].name} template requires the Unlimited Plan.`,
-      );
+      setDownloadError(preview.templateLockedFallback(RESUME_TEMPLATES[templateId].name));
       return;
     }
 
@@ -105,18 +106,18 @@ export function PreviewDownload({
       const response = await fetch("/api/pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ resume, themeColor, templateId }),
+        body: JSON.stringify({ resume, themeColor, templateId, language }),
       });
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        throw new Error(data?.error ?? "Failed to generate the PDF.");
+        throw new Error(data?.error ?? preview.pdfFailFallback);
       }
 
       await downloadFile(await response.blob(), "pdf");
     } catch (error) {
       setDownloadError(
-        error instanceof Error ? error.message : "Failed to generate the PDF.",
+        error instanceof Error ? error.message : preview.pdfFailFallback,
       );
     } finally {
       setDownloadingFormat(null);
@@ -125,7 +126,7 @@ export function PreviewDownload({
 
   const handleDownloadDocx = async () => {
     if (!isSubscribed) {
-      setDownloadError("DOCX export requires the Unlimited Plan.");
+      setDownloadError(preview.docxLockedFallback);
       return;
     }
 
@@ -135,18 +136,18 @@ export function PreviewDownload({
       const response = await fetch("/api/docx", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ resume, themeColor }),
+        body: JSON.stringify({ resume, themeColor, language }),
       });
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        throw new Error(data?.error ?? "Failed to generate the DOCX file.");
+        throw new Error(data?.error ?? preview.docxFailFallback);
       }
 
       await downloadFile(await response.blob(), "docx");
     } catch (error) {
       setDownloadError(
-        error instanceof Error ? error.message : "Failed to generate the DOCX file.",
+        error instanceof Error ? error.message : preview.docxFailFallback,
       );
     } finally {
       setDownloadingFormat(null);
@@ -165,11 +166,9 @@ export function PreviewDownload({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                ATS Compatibility
+                {preview.atsTitle}
               </CardTitle>
-              <CardDescription>
-                Estimated match against the provided job
-              </CardDescription>
+              <CardDescription>{preview.atsDescription}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-end gap-2">
@@ -180,7 +179,7 @@ export function PreviewDownload({
               </div>
               <Separator />
               <div className="space-y-2">
-                <p className="text-sm font-medium">What was improved:</p>
+                <p className="text-sm font-medium">{preview.whatWasImproved}</p>
                 <ul className="space-y-1.5 text-sm text-muted-foreground">
                   {resume.matchAnalysis.map((item, index) => (
                     <li key={index} className="flex gap-2">
@@ -195,7 +194,7 @@ export function PreviewDownload({
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Template</CardTitle>
+              <CardTitle className="text-base">{preview.templateCardTitle}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-3 gap-2">
@@ -231,7 +230,7 @@ export function PreviewDownload({
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Color</CardTitle>
+              <CardTitle className="text-base">{preview.colorCardTitle}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
@@ -268,9 +267,7 @@ export function PreviewDownload({
               ) : (
                 <Download className="h-4 w-4" />
               )}
-              {isPremiumTemplateLocked
-                ? "Unlock to Download"
-                : "Download Optimized PDF"}
+              {isPremiumTemplateLocked ? preview.unlockToDownload : preview.downloadPdf}
             </Button>
             <Button
               variant="outline"
@@ -285,7 +282,7 @@ export function PreviewDownload({
               ) : (
                 <FileText className="h-4 w-4" />
               )}
-              {isSubscribed ? "Download as DOCX" : "Download as DOCX (Pro)"}
+              {isSubscribed ? preview.downloadDocx : preview.downloadDocxPro}
             </Button>
             <Button
               variant="outline"
@@ -293,7 +290,7 @@ export function PreviewDownload({
               onClick={onStartOver}
             >
               <RotateCcw className="h-4 w-4" />
-              Optimize another resume
+              {preview.optimizeAnother}
             </Button>
             {downloadError ? (
               <p className="text-sm text-destructive">{downloadError}</p>
@@ -304,17 +301,16 @@ export function PreviewDownload({
             <Zap className="h-4 w-4 text-primary" />
             <AlertTitle className="flex items-center gap-2">
               {isSubscribed
-                ? "Unlimited Plan active"
+                ? preview.unlimitedActive
                 : freeOptimizationsLeft > 0
-                  ? `${freeOptimizationsLeft} free optimization${freeOptimizationsLeft === 1 ? "" : "s"} left`
-                  : "Free limit reached"}
-              <Badge variant="secondary">Unlimited Plan</Badge>
+                  ? preview.freeLeft(freeOptimizationsLeft)
+                  : preview.freeLimitReached}
+              <Badge variant="secondary">{preview.planBadge}</Badge>
             </AlertTitle>
             <AlertDescription>
               {isSubscribed ? (
                 <>
-                  You have unlimited optimizations, every template, and
-                  DOCX export unlocked.
+                  {preview.subscribedDescription}
                   <Button
                     size="sm"
                     variant="outline"
@@ -325,13 +321,12 @@ export function PreviewDownload({
                     {isRedirecting ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : null}
-                    Manage subscription
+                    {preview.manageSubscription}
                   </Button>
                 </>
               ) : (
                 <>
-                  Unlock unlimited optimizations, more templates, DOCX
-                  export, and priority processing for{" "}
+                  {preview.unsubscribedDescription}{" "}
                   <span className="font-semibold text-foreground">
                     $4.99/month
                   </span>
@@ -345,7 +340,7 @@ export function PreviewDownload({
                     {isRedirecting ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : null}
-                    Subscribe to Unlimited Plan
+                    {preview.subscribeButton}
                   </Button>
                 </>
               )}

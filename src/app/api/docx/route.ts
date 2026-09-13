@@ -32,11 +32,11 @@ export async function POST(request: Request) {
     );
   }
 
-  const { resume, themeColor } = parsed.data;
+  const { resume, themeColor, language } = parsed.data;
   const accent = THEME_COLORS[themeColor].replace("#", "");
 
   try {
-    const buffer = await createResumeDocx(resume, accent);
+    const buffer = await createResumeDocx(resume, accent, language);
 
     const fileName = (resume.personalInfo.fullName || "resume")
       .toLowerCase()

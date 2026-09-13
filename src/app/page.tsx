@@ -7,15 +7,18 @@ import { LoadingState } from "@/components/resume/loading-state";
 import { PreviewDownload } from "@/components/resume/preview-download";
 import { OptimizedResume } from "@/lib/schema";
 import { FREE_OPTIMIZATIONS_LIMIT, USAGE_STORAGE_KEY } from "@/lib/constants";
+import { useLanguage } from "@/components/language-provider";
 
 type Step = "input" | "loading" | "result";
 
 export default function Home() {
+  const { language, t } = useLanguage();
+  const page = t("page");
   const [step, setStep] = useState<Step>("input");
   const [error, setError] = useState<string | null>(null);
   const [resume, setResume] = useState<OptimizedResume | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [checkoutNotice, setCheckoutNotice] = useState<string | null>(null);
+  const [checkoutNotice, setCheckoutNotice] = useState<"success" | "error" | null>(null);
   const [usageCount, setUsageCount] = useState<number>(() => {
     if (typeof window === "undefined") return 0;
     try {
@@ -34,10 +37,8 @@ export default function Home() {
 
     const params = new URLSearchParams(window.location.search);
     const checkout = params.get("checkout");
-    if (checkout === "success") {
-      setCheckoutNotice("You're subscribed! Unlimited optimizations and all templates are now unlocked.");
-    } else if (checkout === "error") {
-      setCheckoutNotice("We couldn't confirm your payment. If you were charged, please contact support.");
+    if (checkout === "success" || checkout === "error") {
+      setCheckoutNotice(checkout);
     } else if (checkout === "cancelled") {
       setCheckoutNotice(null);
     }
@@ -53,9 +54,7 @@ export default function Home() {
 
   const handleSubmit = async (resumeText: string, jobDescription: string) => {
     if (!isSubscribed && freeOptimizationsLeft <= 0) {
-      setError(
-        "You've used all your free optimizations. Upgrade to the Unlimited Plan to keep going.",
-      );
+      setError(page.freeLimitError);
       return;
     }
 
@@ -66,13 +65,13 @@ export default function Home() {
       const response = await fetch("/api/optimize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ resumeText, jobDescription }),
+        body: JSON.stringify({ resumeText, jobDescription, language }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data?.error ?? "Error optimizing the resume.");
+        throw new Error(data?.error ?? page.optimizeErrorFallback);
       }
 
       setResume(data.resume);
@@ -89,7 +88,7 @@ export default function Home() {
       }
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Error optimizing the resume.",
+        err instanceof Error ? err.message : page.optimizeErrorFallback,
       );
       setStep("input");
     }
@@ -107,7 +106,7 @@ export default function Home() {
       <main className="flex flex-1 flex-col justify-center px-4 py-10 sm:py-14">
         {checkoutNotice ? (
           <div className="mx-auto mb-6 w-full max-w-4xl rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
-            {checkoutNotice}
+            {checkoutNotice === "success" ? page.checkoutSuccess : page.checkoutError}
           </div>
         ) : null}
         {step === "input" ? (

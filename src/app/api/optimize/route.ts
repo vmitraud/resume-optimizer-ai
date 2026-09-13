@@ -3,10 +3,11 @@ import { z } from "zod";
 import { ApiError } from "@google/genai";
 import { gemini, OPTIMIZE_MODEL } from "@/lib/gemini";
 import { optimizeRequestSchema, optimizedResumeSchema } from "@/lib/schema";
+import { LANGUAGES } from "@/lib/language";
 
 export const runtime = "nodejs";
 
-const SYSTEM_PROMPT = `You are an expert recruiter and ATS (Applicant Tracking System) specialist.
+const buildSystemPrompt = (languageName: string) => `You are an expert recruiter and ATS (Applicant Tracking System) specialist.
 Your task is to rewrite the user's resume to maximize compatibility with the described job, without inventing
 experiences, titles, companies, or education that are not present in the original resume.
 
@@ -16,9 +17,9 @@ Rules:
 - Rewrite the professional summary and experience bullet points to incorporate relevant keywords from the job
   description, but only when they are consistent with the candidate's real experience.
 - Prioritize strong action verbs and quantifiable metrics already present or reasonably inferable from the original text.
-- Respond in English, regardless of the language of the original resume.
+- Respond in ${languageName}, regardless of the language of the original resume.
 - "atsScoreEstimate" is your estimate (0-100) of how well the optimized resume matches the job.
-- "matchAnalysis" should contain 3 to 6 short sentences explaining the main improvements made to fit the job.
+- "matchAnalysis" should contain 3 to 6 short sentences explaining the main improvements made to fit the job, written in ${languageName}.
 - Never invent certifications, technologies, or years of experience that are not supported by the original resume.`;
 
 export async function POST(request: Request) {
@@ -40,14 +41,14 @@ export async function POST(request: Request) {
     );
   }
 
-  const { resumeText, jobDescription } = parsedRequest.data;
+  const { resumeText, jobDescription, language } = parsedRequest.data;
 
   try {
     const response = await gemini.models.generateContent({
       model: OPTIMIZE_MODEL,
       contents: `CURRENT RESUME:\n"""\n${resumeText}\n"""\n\nJOB DESCRIPTION:\n"""\n${jobDescription}\n"""`,
       config: {
-        systemInstruction: SYSTEM_PROMPT,
+        systemInstruction: buildSystemPrompt(LANGUAGES[language].aiName),
         responseMimeType: "application/json",
         responseJsonSchema: z.toJSONSchema(optimizedResumeSchema),
       },

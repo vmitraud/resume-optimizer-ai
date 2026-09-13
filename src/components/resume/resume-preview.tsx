@@ -1,9 +1,16 @@
+"use client";
+
 import { Mail, Phone, Link2, MapPin } from "lucide-react";
 import { OptimizedResume, THEME_COLORS, ThemeColorKey, ResumeTemplateKey } from "@/lib/schema";
+import { useLanguage } from "@/components/language-provider";
+import { translations } from "@/lib/translations";
+
+type DocLabels = { [K in keyof (typeof translations)["en"]["doc"]]: string };
 
 interface TemplateProps {
   resume: OptimizedResume;
   accent: string;
+  doc: DocLabels;
 }
 
 function ContactItems({ resume }: { resume: OptimizedResume }) {
@@ -34,13 +41,13 @@ function ContactItems({ resume }: { resume: OptimizedResume }) {
   );
 }
 
-function ClassicPreview({ resume, accent }: TemplateProps) {
+function ClassicPreview({ resume, accent, doc }: TemplateProps) {
   const { personalInfo, summary, skills, experiences, education } = resume;
 
   return (
     <div className="p-6 sm:p-8">
       <h2 className="text-2xl font-bold" style={{ color: accent }}>
-        {personalInfo.fullName || "Name not provided"}
+        {personalInfo.fullName || doc.nameNotProvided}
       </h2>
       <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
         <ContactItems resume={resume} />
@@ -52,7 +59,7 @@ function ClassicPreview({ resume, accent }: TemplateProps) {
             className="border-b pb-1 text-xs font-bold tracking-wide uppercase"
             style={{ color: accent, borderColor: accent }}
           >
-            Professional Summary
+            {doc.summary}
           </h3>
           <p className="mt-2 leading-relaxed text-neutral-700">{summary}</p>
         </section>
@@ -64,7 +71,7 @@ function ClassicPreview({ resume, accent }: TemplateProps) {
             className="border-b pb-1 text-xs font-bold tracking-wide uppercase"
             style={{ color: accent, borderColor: accent }}
           >
-            Skills
+            {doc.skills}
           </h3>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {skills.map((skill, index) => (
@@ -86,7 +93,7 @@ function ClassicPreview({ resume, accent }: TemplateProps) {
             className="border-b pb-1 text-xs font-bold tracking-wide uppercase"
             style={{ color: accent, borderColor: accent }}
           >
-            Professional Experience
+            {doc.experience}
           </h3>
           <div className="mt-2 space-y-3">
             {experiences.map((exp, index) => (
@@ -117,7 +124,7 @@ function ClassicPreview({ resume, accent }: TemplateProps) {
             className="border-b pb-1 text-xs font-bold tracking-wide uppercase"
             style={{ color: accent, borderColor: accent }}
           >
-            Education
+            {doc.education}
           </h3>
           <div className="mt-2 space-y-1.5">
             {education.map((edu, index) => (
@@ -138,7 +145,7 @@ function ClassicPreview({ resume, accent }: TemplateProps) {
   );
 }
 
-function ModernPreview({ resume, accent }: TemplateProps) {
+function ModernPreview({ resume, accent, doc }: TemplateProps) {
   const { personalInfo, summary, skills, experiences, education } = resume;
 
   return (
@@ -148,7 +155,7 @@ function ModernPreview({ resume, accent }: TemplateProps) {
         style={{ backgroundColor: accent }}
       >
         <h2 className="text-lg font-bold">
-          {personalInfo.fullName || "Name not provided"}
+          {personalInfo.fullName || doc.nameNotProvided}
         </h2>
 
         <div className="mt-4 flex flex-col gap-1.5 text-[11px] opacity-90">
@@ -158,7 +165,7 @@ function ModernPreview({ resume, accent }: TemplateProps) {
         {skills.length > 0 ? (
           <div className="mt-5">
             <h3 className="text-[10px] font-bold tracking-wide uppercase opacity-90">
-              Skills
+              {doc.skills}
             </h3>
             <ul className="mt-2 space-y-1 text-[11px] opacity-95">
               {skills.map((skill, index) => (
@@ -171,7 +178,7 @@ function ModernPreview({ resume, accent }: TemplateProps) {
         {education.length > 0 ? (
           <div className="mt-5">
             <h3 className="text-[10px] font-bold tracking-wide uppercase opacity-90">
-              Education
+              {doc.education}
             </h3>
             <div className="mt-2 space-y-2 text-[11px]">
               {education.map((edu, index) => (
@@ -195,7 +202,7 @@ function ModernPreview({ resume, accent }: TemplateProps) {
               className="text-xs font-bold tracking-wide uppercase"
               style={{ color: accent }}
             >
-              Profile
+              {doc.profile}
             </h3>
             <p className="mt-2 leading-relaxed text-neutral-700">{summary}</p>
           </section>
@@ -207,7 +214,7 @@ function ModernPreview({ resume, accent }: TemplateProps) {
               className="text-xs font-bold tracking-wide uppercase"
               style={{ color: accent }}
             >
-              Experience
+              {doc.experienceShort}
             </h3>
             <div className="mt-2 space-y-3">
               {experiences.map((exp, index) => (
@@ -236,13 +243,13 @@ function ModernPreview({ resume, accent }: TemplateProps) {
   );
 }
 
-function MinimalPreview({ resume, accent }: TemplateProps) {
+function MinimalPreview({ resume, accent, doc }: TemplateProps) {
   const { personalInfo, summary, skills, experiences, education } = resume;
 
   return (
     <div className="p-8 sm:p-10">
       <h2 className="text-xl font-normal tracking-wide text-neutral-900">
-        {personalInfo.fullName || "Name not provided"}
+        {personalInfo.fullName || doc.nameNotProvided}
       </h2>
       <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-neutral-400">
         <ContactItems resume={resume} />
@@ -254,7 +261,7 @@ function MinimalPreview({ resume, accent }: TemplateProps) {
             className="text-[10px] font-bold tracking-[0.2em] uppercase"
             style={{ color: accent }}
           >
-            Summary
+            {doc.summaryShort}
           </h3>
           <p className="mt-2 leading-relaxed text-neutral-600">{summary}</p>
         </section>
@@ -266,7 +273,7 @@ function MinimalPreview({ resume, accent }: TemplateProps) {
             className="text-[10px] font-bold tracking-[0.2em] uppercase"
             style={{ color: accent }}
           >
-            Experience
+            {doc.experienceShort}
           </h3>
           <div className="mt-3 space-y-4">
             {experiences.map((exp, index) => (
@@ -297,7 +304,7 @@ function MinimalPreview({ resume, accent }: TemplateProps) {
             className="text-[10px] font-bold tracking-[0.2em] uppercase"
             style={{ color: accent }}
           >
-            Skills
+            {doc.skills}
           </h3>
           <p className="mt-2 text-neutral-600">{skills.join("  ·  ")}</p>
         </section>
@@ -309,7 +316,7 @@ function MinimalPreview({ resume, accent }: TemplateProps) {
             className="text-[10px] font-bold tracking-[0.2em] uppercase"
             style={{ color: accent }}
           >
-            Education
+            {doc.education}
           </h3>
           <div className="mt-2 space-y-1.5">
             {education.map((edu, index) => (
@@ -338,15 +345,17 @@ interface ResumePreviewProps {
 
 export function ResumePreview({ resume, themeColor, templateId }: ResumePreviewProps) {
   const accent = THEME_COLORS[themeColor];
+  const { t } = useLanguage();
+  const doc = t("doc");
 
   return (
     <div className="aspect-[210/297] w-full overflow-y-auto rounded-md border bg-white text-[13px] text-neutral-800 shadow-sm">
       {templateId === "modern" ? (
-        <ModernPreview resume={resume} accent={accent} />
+        <ModernPreview resume={resume} accent={accent} doc={doc} />
       ) : templateId === "minimal" ? (
-        <MinimalPreview resume={resume} accent={accent} />
+        <MinimalPreview resume={resume} accent={accent} doc={doc} />
       ) : (
-        <ClassicPreview resume={resume} accent={accent} />
+        <ClassicPreview resume={resume} accent={accent} doc={doc} />
       )}
     </div>
   );

@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useLanguage } from "@/components/language-provider";
 
 interface ResumeInputFormProps {
   onSubmit: (resumeText: string, jobDescription: string) => void;
@@ -29,6 +30,8 @@ export function ResumeInputForm({
   disabled,
   errorMessage,
 }: ResumeInputFormProps) {
+  const { t } = useLanguage();
+  const form = t("form");
   const [resumeText, setResumeText] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -43,10 +46,10 @@ export function ResumeInputForm({
   const validationMessage =
     attempted && (isResumeMissing || isJobDescriptionMissing)
       ? isResumeMissing && isJobDescriptionMissing
-        ? "Please paste or upload your resume and add the job description so we can compare them and optimize your resume."
+        ? form.validationBoth
         : isJobDescriptionMissing
-          ? "Please add the job description so we can compare it with your resume and optimize it."
-          : "Please paste or upload your resume before optimizing."
+          ? form.validationJob
+          : form.validationResume
       : null;
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -79,13 +82,13 @@ export function ResumeInputForm({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data?.error ?? "Could not read this file.");
+        throw new Error(data?.error ?? form.uploadErrorFallback);
       }
 
       setResumeText(data.text);
     } catch (err) {
       setUploadError(
-        err instanceof Error ? err.message : "Could not read this file.",
+        err instanceof Error ? err.message : form.uploadErrorFallback,
       );
     } finally {
       setIsUploading(false);
@@ -95,11 +98,8 @@ export function ResumeInputForm({
   return (
     <Card className="mx-auto w-full max-w-4xl">
       <CardHeader>
-        <CardTitle>Paste your details below</CardTitle>
-        <CardDescription>
-          The more complete the text, the better the optimization. No need
-          to format it — just paste the content.
-        </CardDescription>
+        <CardTitle>{form.cardTitle}</CardTitle>
+        <CardDescription>{form.cardDescription}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -120,7 +120,7 @@ export function ResumeInputForm({
               <div className="flex items-center justify-between gap-2">
                 <Label htmlFor="resumeText" className="flex items-center gap-2">
                   <FileText className="h-4 w-4" />
-                  Current Resume
+                  {form.resumeLabel}
                 </Label>
                 <Button
                   type="button"
@@ -134,7 +134,7 @@ export function ResumeInputForm({
                   ) : (
                     <Upload className="h-3.5 w-3.5" />
                   )}
-                  Upload file
+                  {form.uploadButton}
                 </Button>
                 <input
                   ref={fileInputRef}
@@ -146,7 +146,7 @@ export function ResumeInputForm({
               </div>
               <Textarea
                 id="resumeText"
-                placeholder="Paste the full text of your current resume here, or upload a PDF, DOCX, or TXT file..."
+                placeholder={form.resumePlaceholder}
                 className={cn(
                   "min-h-[280px] resize-y",
                   attempted && isResumeMissing && "border-destructive",
@@ -159,9 +159,9 @@ export function ResumeInputForm({
                 <p className="text-xs text-destructive">{uploadError}</p>
               ) : null}
               <p className="text-xs text-muted-foreground">
-                {resumeText.trim().length} characters
+                {resumeText.trim().length} {form.characters}
                 {resumeText.trim().length < MIN_LENGTH
-                  ? ` (minimum ${MIN_LENGTH})`
+                  ? ` (${form.minimum} ${MIN_LENGTH})`
                   : ""}
               </p>
             </div>
@@ -172,11 +172,11 @@ export function ResumeInputForm({
                 className="flex items-center gap-2"
               >
                 <Briefcase className="h-4 w-4" />
-                Job Description
+                {form.jobLabel}
               </Label>
               <Textarea
                 id="jobDescription"
-                placeholder="Paste the full text of the target job description here..."
+                placeholder={form.jobPlaceholder}
                 className={cn(
                   "min-h-[280px] resize-y",
                   attempted && isJobDescriptionMissing && "border-destructive",
@@ -186,9 +186,9 @@ export function ResumeInputForm({
                 disabled={disabled}
               />
               <p className="text-xs text-muted-foreground">
-                {jobDescription.trim().length} characters
+                {jobDescription.trim().length} {form.characters}
                 {jobDescription.trim().length < MIN_LENGTH
-                  ? ` (minimum ${MIN_LENGTH})`
+                  ? ` (${form.minimum} ${MIN_LENGTH})`
                   : ""}
               </p>
             </div>
@@ -201,7 +201,7 @@ export function ResumeInputForm({
             disabled={disabled || isUploading}
           >
             <Sparkles className="h-4 w-4" />
-            Optimize My Resume with AI
+            {form.submit}
           </Button>
         </form>
       </CardContent>

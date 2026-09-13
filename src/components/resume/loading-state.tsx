@@ -5,24 +5,17 @@ import { Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const MESSAGES = [
-  "Reading your current resume...",
-  "Analyzing the job description...",
-  "Identifying ATS keywords...",
-  "Rewriting the professional summary...",
-  "Optimizing experience bullet points...",
-  "Calculating the compatibility score...",
-  "Almost there, finalizing the details...",
-];
+import { useLanguage } from "@/components/language-provider";
 
 export function LoadingState() {
+  const { t } = useLanguage();
+  const loading = t("loading");
   const [messageIndex, setMessageIndex] = useState(0);
   const [progress, setProgress] = useState(8);
 
   useEffect(() => {
     const messageTimer = setInterval(() => {
-      setMessageIndex((prev) => (prev + 1) % MESSAGES.length);
+      setMessageIndex((prev) => (prev + 1) % loading.messages.length);
     }, 2200);
 
     const progressTimer = setInterval(() => {
@@ -41,10 +34,10 @@ export function LoadingState() {
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
         <div className="space-y-1">
           <p className="text-lg font-medium transition-all">
-            {MESSAGES[messageIndex]}
+            {loading.messages[messageIndex]}
           </p>
           <p className="text-sm text-muted-foreground">
-            This usually takes 15 to 30 seconds.
+            {loading.duration}
           </p>
         </div>
         <div className="w-full max-w-sm">

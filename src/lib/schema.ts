@@ -1,4 +1,9 @@
 import { z } from "zod";
+import { LANGUAGES, Language } from "@/lib/language";
+
+const languageSchema = z
+  .enum(Object.keys(LANGUAGES) as [Language, ...Language[]])
+  .default("en");
 
 export const personalInfoSchema = z.object({
   fullName: z.string(),
@@ -39,6 +44,7 @@ export type OptimizedResume = z.infer<typeof optimizedResumeSchema>;
 export const optimizeRequestSchema = z.object({
   resumeText: z.string().min(50, "Paste the full text of your resume."),
   jobDescription: z.string().min(50, "Paste the full text of the job description."),
+  language: languageSchema,
 });
 
 export type OptimizeRequest = z.infer<typeof optimizeRequestSchema>;
@@ -69,6 +75,7 @@ export const pdfRequestSchema = z.object({
   templateId: z
     .enum(Object.keys(RESUME_TEMPLATES) as [ResumeTemplateKey, ...ResumeTemplateKey[]])
     .default("classic"),
+  language: languageSchema,
 });
 
 export type PdfRequest = z.infer<typeof pdfRequestSchema>;
@@ -78,6 +85,7 @@ export const docxRequestSchema = z.object({
   themeColor: z.enum(
     Object.keys(THEME_COLORS) as [ThemeColorKey, ...ThemeColorKey[]],
   ),
+  language: languageSchema,
 });
 
 export type DocxRequest = z.infer<typeof docxRequestSchema>;

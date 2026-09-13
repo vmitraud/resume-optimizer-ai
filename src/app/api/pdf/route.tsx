@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { resume, themeColor, templateId } = parsed.data;
+  const { resume, themeColor, templateId, language } = parsed.data;
 
   if (RESUME_TEMPLATES[templateId].isPremium) {
     const isSubscribed = await getIsSubscribed();
@@ -38,7 +38,12 @@ export async function POST(request: Request) {
   }
 
   const document = (
-    <ResumeDocument resume={resume} themeColor={themeColor} templateId={templateId} />
+    <ResumeDocument
+      resume={resume}
+      themeColor={themeColor}
+      templateId={templateId}
+      language={language}
+    />
   );
 
   try {

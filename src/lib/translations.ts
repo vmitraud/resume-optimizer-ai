@@ -1,0 +1,282 @@
+import { Language } from "@/lib/language";
+
+export const translations = {
+  en: {
+    hero: {
+      badge: "AI Resume Optimizer",
+      title: "Pass automated job screening in 30 seconds",
+      description:
+        "Paste your resume and the job description. Our AI rewrites the content with the right keywords to maximize your compatibility with ATS systems — and generates a PDF ready to send.",
+    },
+    form: {
+      cardTitle: "Paste your details below",
+      cardDescription:
+        "The more complete the text, the better the optimization. No need to format it — just paste the content.",
+      resumeLabel: "Current Resume",
+      uploadButton: "Upload file",
+      resumePlaceholder:
+        "Paste the full text of your current resume here, or upload a PDF, DOCX, or TXT file...",
+      jobLabel: "Job Description",
+      jobPlaceholder: "Paste the full text of the target job description here...",
+      characters: "characters",
+      minimum: "minimum",
+      submit: "Optimize My Resume with AI",
+      validationBoth:
+        "Please paste or upload your resume and add the job description so we can compare them and optimize your resume.",
+      validationJob:
+        "Please add the job description so we can compare it with your resume and optimize it.",
+      validationResume: "Please paste or upload your resume before optimizing.",
+      uploadErrorFallback: "Could not read this file.",
+    },
+    loading: {
+      messages: [
+        "Reading your current resume...",
+        "Analyzing the job description...",
+        "Identifying ATS keywords...",
+        "Rewriting the professional summary...",
+        "Optimizing experience bullet points...",
+        "Calculating the compatibility score...",
+        "Almost there, finalizing the details...",
+      ],
+      duration: "This usually takes 15 to 30 seconds.",
+    },
+    preview: {
+      atsTitle: "ATS Compatibility",
+      atsDescription: "Estimated match against the provided job",
+      whatWasImproved: "What was improved:",
+      templateCardTitle: "Template",
+      colorCardTitle: "Color",
+      downloadPdf: "Download Optimized PDF",
+      unlockToDownload: "Unlock to Download",
+      downloadDocx: "Download as DOCX",
+      downloadDocxPro: "Download as DOCX (Pro)",
+      optimizeAnother: "Optimize another resume",
+      unlimitedActive: "Unlimited Plan active",
+      freeLeft: (count: number) =>
+        `${count} free optimization${count === 1 ? "" : "s"} left`,
+      freeLimitReached: "Free limit reached",
+      planBadge: "Unlimited Plan",
+      subscribedDescription:
+        "You have unlimited optimizations, every template, and DOCX export unlocked.",
+      manageSubscription: "Manage subscription",
+      unsubscribedDescription:
+        "Unlock unlimited optimizations, more templates, DOCX export, and priority processing for",
+      subscribeButton: "Subscribe to Unlimited Plan",
+      pdfFailFallback: "Failed to generate the PDF.",
+      docxFailFallback: "Failed to generate the DOCX file.",
+      docxLockedFallback: "DOCX export requires the Unlimited Plan.",
+      checkoutFailFallback: "Could not start checkout.",
+      billingFailFallback: "Could not open billing management.",
+      templateLockedFallback: (name: string) =>
+        `The ${name} template requires the Unlimited Plan.`,
+    },
+    page: {
+      checkoutSuccess:
+        "You're subscribed! Unlimited optimizations and all templates are now unlocked.",
+      checkoutError:
+        "We couldn't confirm your payment. If you were charged, please contact support.",
+      freeLimitError:
+        "You've used all your free optimizations. Upgrade to the Unlimited Plan to keep going.",
+      optimizeErrorFallback: "Error optimizing the resume.",
+    },
+    doc: {
+      summary: "Professional Summary",
+      summaryShort: "Summary",
+      profile: "Profile",
+      skills: "Skills",
+      experience: "Professional Experience",
+      experienceShort: "Experience",
+      education: "Education",
+      contact: "Contact",
+      nameNotProvided: "Name not provided",
+    },
+  },
+  pt: {
+    hero: {
+      badge: "Otimizador de Currículo com IA",
+      title: "Passe na triagem automática de vagas em 30 segundos",
+      description:
+        "Cole seu currículo e a descrição da vaga. Nossa IA reescreve o conteúdo com as palavras-chave certas para maximizar sua compatibilidade com sistemas ATS — e gera um PDF pronto para enviar.",
+    },
+    form: {
+      cardTitle: "Cole seus dados abaixo",
+      cardDescription:
+        "Quanto mais completo o texto, melhor a otimização. Não é necessário formatar — apenas cole o conteúdo.",
+      resumeLabel: "Currículo Atual",
+      uploadButton: "Enviar arquivo",
+      resumePlaceholder:
+        "Cole aqui o texto completo do seu currículo atual, ou envie um arquivo PDF, DOCX ou TXT...",
+      jobLabel: "Descrição da Vaga",
+      jobPlaceholder: "Cole aqui o texto completo da vaga desejada...",
+      characters: "caracteres",
+      minimum: "mínimo",
+      submit: "Otimizar Meu Currículo com IA",
+      validationBoth:
+        "Cole ou envie seu currículo e adicione a descrição da vaga para que possamos compará-los e otimizar seu currículo.",
+      validationJob:
+        "Adicione a descrição da vaga para que possamos compará-la com seu currículo e otimizá-lo.",
+      validationResume: "Cole ou envie seu currículo antes de otimizar.",
+      uploadErrorFallback: "Não foi possível ler este arquivo.",
+    },
+    loading: {
+      messages: [
+        "Lendo seu currículo atual...",
+        "Analisando a descrição da vaga...",
+        "Identificando palavras-chave de ATS...",
+        "Reescrevendo o resumo profissional...",
+        "Otimizando os bullet points de experiência...",
+        "Calculando a pontuação de compatibilidade...",
+        "Quase lá, finalizando os detalhes...",
+      ],
+      duration: "Isso costuma levar de 15 a 30 segundos.",
+    },
+    preview: {
+      atsTitle: "Compatibilidade com ATS",
+      atsDescription: "Estimativa de aderência à vaga informada",
+      whatWasImproved: "O que foi melhorado:",
+      templateCardTitle: "Modelo",
+      colorCardTitle: "Cor",
+      downloadPdf: "Baixar PDF Otimizado",
+      unlockToDownload: "Desbloquear para Baixar",
+      downloadDocx: "Baixar como DOCX",
+      downloadDocxPro: "Baixar como DOCX (Pro)",
+      optimizeAnother: "Otimizar outro currículo",
+      unlimitedActive: "Plano Ilimitado ativo",
+      freeLeft: (count: number) =>
+        `${count} otimização${count === 1 ? "" : "ões"} grátis restante${count === 1 ? "" : "s"}`,
+      freeLimitReached: "Limite grátis atingido",
+      planBadge: "Plano Ilimitado",
+      subscribedDescription:
+        "Você tem otimizações ilimitadas, todos os modelos e exportação em DOCX desbloqueados.",
+      manageSubscription: "Gerenciar assinatura",
+      unsubscribedDescription:
+        "Desbloqueie otimizações ilimitadas, mais modelos, exportação em DOCX e processamento prioritário por",
+      subscribeButton: "Assinar Plano Ilimitado",
+      pdfFailFallback: "Falha ao gerar o PDF.",
+      docxFailFallback: "Falha ao gerar o arquivo DOCX.",
+      docxLockedFallback: "A exportação em DOCX requer o Plano Ilimitado.",
+      checkoutFailFallback: "Não foi possível iniciar o pagamento.",
+      billingFailFallback: "Não foi possível abrir o gerenciamento de cobrança.",
+      templateLockedFallback: (name: string) =>
+        `O modelo ${name} requer o Plano Ilimitado.`,
+    },
+    page: {
+      checkoutSuccess:
+        "Assinatura confirmada! Otimizações ilimitadas e todos os modelos já estão desbloqueados.",
+      checkoutError:
+        "Não conseguimos confirmar seu pagamento. Se você foi cobrado, entre em contato com o suporte.",
+      freeLimitError:
+        "Você usou todas as suas otimizações grátis. Assine o Plano Ilimitado para continuar.",
+      optimizeErrorFallback: "Erro ao otimizar o currículo.",
+    },
+    doc: {
+      summary: "Resumo Profissional",
+      summaryShort: "Resumo",
+      profile: "Perfil",
+      skills: "Habilidades",
+      experience: "Experiência Profissional",
+      experienceShort: "Experiência",
+      education: "Formação Acadêmica",
+      contact: "Contato",
+      nameNotProvided: "Nome não informado",
+    },
+  },
+  de: {
+    hero: {
+      badge: "KI-Lebenslauf-Optimierer",
+      title: "Bestehen Sie die automatische Bewerbervorauswahl in 30 Sekunden",
+      description:
+        "Fügen Sie Ihren Lebenslauf und die Stellenbeschreibung ein. Unsere KI schreibt den Inhalt mit den richtigen Schlüsselwörtern um, um Ihre Kompatibilität mit ATS-Systemen zu maximieren – und erstellt ein versandfertiges PDF.",
+    },
+    form: {
+      cardTitle: "Fügen Sie Ihre Angaben unten ein",
+      cardDescription:
+        "Je vollständiger der Text, desto besser die Optimierung. Keine Formatierung nötig — fügen Sie einfach den Inhalt ein.",
+      resumeLabel: "Aktueller Lebenslauf",
+      uploadButton: "Datei hochladen",
+      resumePlaceholder:
+        "Fügen Sie hier den vollständigen Text Ihres aktuellen Lebenslaufs ein oder laden Sie eine PDF-, DOCX- oder TXT-Datei hoch...",
+      jobLabel: "Stellenbeschreibung",
+      jobPlaceholder: "Fügen Sie hier den vollständigen Text der Zielstelle ein...",
+      characters: "Zeichen",
+      minimum: "mindestens",
+      submit: "Meinen Lebenslauf mit KI optimieren",
+      validationBoth:
+        "Bitte fügen Sie Ihren Lebenslauf ein oder laden Sie ihn hoch und ergänzen Sie die Stellenbeschreibung, damit wir beides vergleichen und Ihren Lebenslauf optimieren können.",
+      validationJob:
+        "Bitte fügen Sie die Stellenbeschreibung hinzu, damit wir sie mit Ihrem Lebenslauf vergleichen und optimieren können.",
+      validationResume:
+        "Bitte fügen Sie Ihren Lebenslauf ein oder laden Sie ihn hoch, bevor Sie optimieren.",
+      uploadErrorFallback: "Diese Datei konnte nicht gelesen werden.",
+    },
+    loading: {
+      messages: [
+        "Ihr aktueller Lebenslauf wird gelesen...",
+        "Die Stellenbeschreibung wird analysiert...",
+        "ATS-Schlüsselwörter werden identifiziert...",
+        "Die Kurzprofil wird umgeschrieben...",
+        "Erfahrungspunkte werden optimiert...",
+        "Der Kompatibilitäts-Score wird berechnet...",
+        "Gleich fertig, letzte Details werden abgeschlossen...",
+      ],
+      duration: "Das dauert normalerweise 15 bis 30 Sekunden.",
+    },
+    preview: {
+      atsTitle: "ATS-Kompatibilität",
+      atsDescription: "Geschätzte Übereinstimmung mit der angegebenen Stelle",
+      whatWasImproved: "Was verbessert wurde:",
+      templateCardTitle: "Vorlage",
+      colorCardTitle: "Farbe",
+      downloadPdf: "Optimiertes PDF herunterladen",
+      unlockToDownload: "Zum Herunterladen freischalten",
+      downloadDocx: "Als DOCX herunterladen",
+      downloadDocxPro: "Als DOCX herunterladen (Pro)",
+      optimizeAnother: "Weiteren Lebenslauf optimieren",
+      unlimitedActive: "Unlimited-Plan aktiv",
+      freeLeft: (count: number) =>
+        `${count} kostenlose Optimierung${count === 1 ? "" : "en"} übrig`,
+      freeLimitReached: "Kostenloses Limit erreicht",
+      planBadge: "Unlimited-Plan",
+      subscribedDescription:
+        "Sie haben unbegrenzte Optimierungen, alle Vorlagen und den DOCX-Export freigeschaltet.",
+      manageSubscription: "Abo verwalten",
+      unsubscribedDescription:
+        "Schalten Sie unbegrenzte Optimierungen, weitere Vorlagen, DOCX-Export und priorisierte Verarbeitung frei für",
+      subscribeButton: "Unlimited-Plan abonnieren",
+      pdfFailFallback: "PDF konnte nicht erstellt werden.",
+      docxFailFallback: "DOCX-Datei konnte nicht erstellt werden.",
+      docxLockedFallback: "Der DOCX-Export erfordert den Unlimited-Plan.",
+      checkoutFailFallback: "Bezahlvorgang konnte nicht gestartet werden.",
+      billingFailFallback: "Abo-Verwaltung konnte nicht geöffnet werden.",
+      templateLockedFallback: (name: string) =>
+        `Die Vorlage „${name}“ erfordert den Unlimited-Plan.`,
+    },
+    page: {
+      checkoutSuccess:
+        "Sie sind jetzt Abonnent! Unbegrenzte Optimierungen und alle Vorlagen sind freigeschaltet.",
+      checkoutError:
+        "Wir konnten Ihre Zahlung nicht bestätigen. Falls Sie belastet wurden, kontaktieren Sie bitte den Support.",
+      freeLimitError:
+        "Sie haben alle kostenlosen Optimierungen aufgebraucht. Upgraden Sie auf den Unlimited-Plan, um fortzufahren.",
+      optimizeErrorFallback: "Fehler beim Optimieren des Lebenslaufs.",
+    },
+    doc: {
+      summary: "Beruflicher Werdegang",
+      summaryShort: "Zusammenfassung",
+      profile: "Profil",
+      skills: "Fähigkeiten",
+      experience: "Berufserfahrung",
+      experienceShort: "Erfahrung",
+      education: "Ausbildung",
+      contact: "Kontakt",
+      nameNotProvided: "Name nicht angegeben",
+    },
+  },
+} as const satisfies Record<Language, unknown>;
+
+export function t<T extends keyof (typeof translations)["en"]>(
+  language: Language,
+  section: T,
+): (typeof translations)["en"][T] {
+  return translations[language][section] as (typeof translations)["en"][T];
+}

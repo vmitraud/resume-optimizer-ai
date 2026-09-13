@@ -1,5 +1,7 @@
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, BorderStyle } from "docx";
 import { OptimizedResume } from "@/lib/schema";
+import { Language } from "@/lib/language";
+import { translations } from "@/lib/translations";
 
 function sectionHeading(text: string, accent: string) {
   return new Paragraph({
@@ -19,7 +21,12 @@ function sectionHeading(text: string, accent: string) {
   });
 }
 
-export async function createResumeDocx(resume: OptimizedResume, accent: string): Promise<Buffer> {
+export async function createResumeDocx(
+  resume: OptimizedResume,
+  accent: string,
+  language: Language,
+): Promise<Buffer> {
+  const doc = translations[language].doc;
   const { personalInfo, summary, skills, experiences, education } = resume;
 
   const contactItems = [
@@ -34,7 +41,7 @@ export async function createResumeDocx(resume: OptimizedResume, accent: string):
       spacing: { after: 80 },
       children: [
         new TextRun({
-          text: personalInfo.fullName || "Name not provided",
+          text: personalInfo.fullName || doc.nameNotProvided,
           bold: true,
           color: accent,
           size: 40,
@@ -60,7 +67,7 @@ export async function createResumeDocx(resume: OptimizedResume, accent: string):
 
   if (summary) {
     children.push(
-      sectionHeading("Professional Summary", accent),
+      sectionHeading(doc.summary, accent),
       new Paragraph({
         spacing: { after: 120 },
         children: [new TextRun({ text: summary, size: 20 })],
@@ -70,7 +77,7 @@ export async function createResumeDocx(resume: OptimizedResume, accent: string):
 
   if (skills.length > 0) {
     children.push(
-      sectionHeading("Skills", accent),
+      sectionHeading(doc.skills, accent),
       new Paragraph({
         spacing: { after: 120 },
         children: [new TextRun({ text: skills.join("  •  "), size: 20 })],
@@ -79,7 +86,7 @@ export async function createResumeDocx(resume: OptimizedResume, accent: string):
   }
 
   if (experiences.length > 0) {
-    children.push(sectionHeading("Professional Experience", accent));
+    children.push(sectionHeading(doc.experience, accent));
     for (const exp of experiences) {
       children.push(
         new Paragraph({
@@ -107,7 +114,7 @@ export async function createResumeDocx(resume: OptimizedResume, accent: string):
   }
 
   if (education.length > 0) {
-    children.push(sectionHeading("Education", accent));
+    children.push(sectionHeading(doc.education, accent));
     for (const edu of education) {
       children.push(
         new Paragraph({
@@ -129,7 +136,7 @@ export async function createResumeDocx(resume: OptimizedResume, accent: string):
   }
 
   const document = new Document({
-    title: `Resume - ${personalInfo.fullName || "Candidate"}`,
+    title: `Resume - ${personalInfo.fullName || doc.nameNotProvided}`,
     sections: [{ children }],
   });
 

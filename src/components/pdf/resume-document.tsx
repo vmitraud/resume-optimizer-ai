@@ -1,9 +1,14 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import { OptimizedResume, THEME_COLORS, ThemeColorKey, ResumeTemplateKey } from "@/lib/schema";
+import { Language } from "@/lib/language";
+import { translations } from "@/lib/translations";
+
+type DocLabels = { [K in keyof (typeof translations)["en"]["doc"]]: string };
 
 interface TemplateProps {
   resume: OptimizedResume;
   accent: string;
+  doc: DocLabels;
 }
 
 const classicStyles = (accent: string) =>
@@ -114,7 +119,7 @@ const classicStyles = (accent: string) =>
     },
   });
 
-function ClassicTemplate({ resume, accent }: TemplateProps) {
+function ClassicTemplate({ resume, accent, doc }: TemplateProps) {
   const styles = classicStyles(accent);
   const { personalInfo, summary, skills, experiences, education } = resume;
 
@@ -127,7 +132,7 @@ function ClassicTemplate({ resume, accent }: TemplateProps) {
 
   return (
     <Page size="A4" style={styles.page}>
-      <Text style={styles.name}>{personalInfo.fullName || "Name not provided"}</Text>
+      <Text style={styles.name}>{personalInfo.fullName || doc.nameNotProvided}</Text>
       <View style={styles.contactRow}>
         {contactItems.map((item, index) => (
           <Text key={`${item}-${index}`} style={styles.contactItem}>
@@ -139,14 +144,14 @@ function ClassicTemplate({ resume, accent }: TemplateProps) {
 
       {summary ? (
         <View>
-          <Text style={styles.sectionTitle}>Professional Summary</Text>
+          <Text style={styles.sectionTitle}>{doc.summary}</Text>
           <Text style={styles.paragraph}>{summary}</Text>
         </View>
       ) : null}
 
       {skills.length > 0 ? (
         <View>
-          <Text style={styles.sectionTitle}>Skills</Text>
+          <Text style={styles.sectionTitle}>{doc.skills}</Text>
           <View style={styles.skillsRow}>
             {skills.map((skill, index) => (
               <Text key={`${skill}-${index}`} style={styles.skillPill}>
@@ -159,7 +164,7 @@ function ClassicTemplate({ resume, accent }: TemplateProps) {
 
       {experiences.length > 0 ? (
         <View>
-          <Text style={styles.sectionTitle}>Professional Experience</Text>
+          <Text style={styles.sectionTitle}>{doc.experience}</Text>
           {experiences.map((exp, index) => (
             <View key={`${exp.company}-${index}`} style={styles.experienceBlock} wrap={false}>
               <View style={styles.experienceHeader}>
@@ -180,7 +185,7 @@ function ClassicTemplate({ resume, accent }: TemplateProps) {
 
       {education.length > 0 ? (
         <View>
-          <Text style={styles.sectionTitle}>Education</Text>
+          <Text style={styles.sectionTitle}>{doc.education}</Text>
           {education.map((edu, index) => (
             <View key={`${edu.institution}-${index}`} style={styles.educationBlock}>
               <Text style={styles.degree}>{edu.degree}</Text>
@@ -306,7 +311,7 @@ const modernStyles = (accent: string) =>
     },
   });
 
-function ModernTemplate({ resume, accent }: TemplateProps) {
+function ModernTemplate({ resume, accent, doc }: TemplateProps) {
   const styles = modernStyles(accent);
   const { personalInfo, summary, skills, experiences, education } = resume;
 
@@ -320,11 +325,11 @@ function ModernTemplate({ resume, accent }: TemplateProps) {
   return (
     <Page size="A4" style={styles.page}>
       <View style={styles.sidebar}>
-        <Text style={styles.name}>{personalInfo.fullName || "Name not provided"}</Text>
+        <Text style={styles.name}>{personalInfo.fullName || doc.nameNotProvided}</Text>
 
         {contactItems.length > 0 ? (
           <View>
-            <Text style={styles.sidebarSectionTitle}>Contact</Text>
+            <Text style={styles.sidebarSectionTitle}>{doc.contact}</Text>
             {contactItems.map((item, index) => (
               <Text key={`${item}-${index}`} style={styles.contactItem}>
                 {item}
@@ -335,7 +340,7 @@ function ModernTemplate({ resume, accent }: TemplateProps) {
 
         {skills.length > 0 ? (
           <View>
-            <Text style={styles.sidebarSectionTitle}>Skills</Text>
+            <Text style={styles.sidebarSectionTitle}>{doc.skills}</Text>
             {skills.map((skill, index) => (
               <Text key={`${skill}-${index}`} style={styles.sidebarSkill}>
                 • {skill}
@@ -346,7 +351,7 @@ function ModernTemplate({ resume, accent }: TemplateProps) {
 
         {education.length > 0 ? (
           <View>
-            <Text style={styles.sidebarSectionTitle}>Education</Text>
+            <Text style={styles.sidebarSectionTitle}>{doc.education}</Text>
             {education.map((edu, index) => (
               <View key={`${edu.institution}-${index}`} style={styles.educationBlockSidebar}>
                 <Text style={styles.degreeSidebar}>{edu.degree}</Text>
@@ -363,14 +368,14 @@ function ModernTemplate({ resume, accent }: TemplateProps) {
       <View style={styles.main}>
         {summary ? (
           <View>
-            <Text style={styles.mainSectionTitle}>Profile</Text>
+            <Text style={styles.mainSectionTitle}>{doc.profile}</Text>
             <Text style={styles.paragraph}>{summary}</Text>
           </View>
         ) : null}
 
         {experiences.length > 0 ? (
           <View>
-            <Text style={styles.mainSectionTitle}>Experience</Text>
+            <Text style={styles.mainSectionTitle}>{doc.experienceShort}</Text>
             {experiences.map((exp, index) => (
               <View key={`${exp.company}-${index}`} style={styles.experienceBlock} wrap={false}>
                 <Text style={styles.role}>{exp.role}</Text>
@@ -479,7 +484,7 @@ const minimalStyles = (accent: string) =>
     },
   });
 
-function MinimalTemplate({ resume, accent }: TemplateProps) {
+function MinimalTemplate({ resume, accent, doc }: TemplateProps) {
   const styles = minimalStyles(accent);
   const { personalInfo, summary, skills, experiences, education } = resume;
 
@@ -492,7 +497,7 @@ function MinimalTemplate({ resume, accent }: TemplateProps) {
 
   return (
     <Page size="A4" style={styles.page}>
-      <Text style={styles.name}>{personalInfo.fullName || "Name not provided"}</Text>
+      <Text style={styles.name}>{personalInfo.fullName || doc.nameNotProvided}</Text>
       <View style={styles.contactRow}>
         {contactItems.map((item, index) => (
           <Text key={`${item}-${index}`} style={styles.contactItem}>
@@ -503,14 +508,14 @@ function MinimalTemplate({ resume, accent }: TemplateProps) {
 
       {summary ? (
         <View>
-          <Text style={styles.sectionTitle}>Summary</Text>
+          <Text style={styles.sectionTitle}>{doc.summaryShort}</Text>
           <Text style={styles.paragraph}>{summary}</Text>
         </View>
       ) : null}
 
       {experiences.length > 0 ? (
         <View>
-          <Text style={styles.sectionTitle}>Experience</Text>
+          <Text style={styles.sectionTitle}>{doc.experienceShort}</Text>
           {experiences.map((exp, index) => (
             <View key={`${exp.company}-${index}`} style={styles.experienceBlock} wrap={false}>
               <View style={styles.experienceHeader}>
@@ -530,14 +535,14 @@ function MinimalTemplate({ resume, accent }: TemplateProps) {
 
       {skills.length > 0 ? (
         <View>
-          <Text style={styles.sectionTitle}>Skills</Text>
+          <Text style={styles.sectionTitle}>{doc.skills}</Text>
           <Text style={styles.skillsInline}>{skills.join("  ·  ")}</Text>
         </View>
       ) : null}
 
       {education.length > 0 ? (
         <View>
-          <Text style={styles.sectionTitle}>Education</Text>
+          <Text style={styles.sectionTitle}>{doc.education}</Text>
           {education.map((edu, index) => (
             <View key={`${edu.institution}-${index}`} style={styles.educationBlock}>
               <Text style={styles.degree}>{edu.degree}</Text>
@@ -557,19 +562,21 @@ interface ResumeDocumentProps {
   resume: OptimizedResume;
   themeColor: ThemeColorKey;
   templateId: ResumeTemplateKey;
+  language: Language;
 }
 
-export function ResumeDocument({ resume, themeColor, templateId }: ResumeDocumentProps) {
+export function ResumeDocument({ resume, themeColor, templateId, language }: ResumeDocumentProps) {
   const accent = THEME_COLORS[themeColor];
+  const doc = translations[language].doc;
 
   return (
-    <Document title={`Resume - ${resume.personalInfo.fullName || "Candidate"}`}>
+    <Document title={`Resume - ${resume.personalInfo.fullName || doc.nameNotProvided}`}>
       {templateId === "modern" ? (
-        <ModernTemplate resume={resume} accent={accent} />
+        <ModernTemplate resume={resume} accent={accent} doc={doc} />
       ) : templateId === "minimal" ? (
-        <MinimalTemplate resume={resume} accent={accent} />
+        <MinimalTemplate resume={resume} accent={accent} doc={doc} />
       ) : (
-        <ClassicTemplate resume={resume} accent={accent} />
+        <ClassicTemplate resume={resume} accent={accent} doc={doc} />
       )}
     </Document>
   );
