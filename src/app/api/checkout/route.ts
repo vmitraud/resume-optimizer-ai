@@ -19,7 +19,11 @@ export async function POST(request: Request) {
       line_items: [{ price: UNLIMITED_PLAN_PRICE_ID, quantity: 1 }],
       success_url: `${origin}/api/checkout/confirm?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/?checkout=cancelled`,
-    });
+      // Not yet in the installed Stripe SDK's TypeScript types, but supported by the API:
+      // disables Stripe's newer "Managed Payments" feature, which otherwise requires every
+      // product to have a tax_code set.
+      managed_payments: { enabled: false },
+    } as Parameters<typeof stripe.checkout.sessions.create>[0]);
 
     if (!session.url) {
       return NextResponse.json(
