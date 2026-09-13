@@ -445,6 +445,187 @@ function BoldPreview({ resume, accent, doc }: TemplateProps) {
   );
 }
 
+function ElegantPreview({ resume, accent, doc }: TemplateProps) {
+  const { personalInfo, summary, skills, experiences, education } = resume;
+
+  return (
+    <div className="px-10 py-12 font-serif sm:px-14">
+      <div className="text-center">
+        <h2 className="text-xl font-bold tracking-wide text-neutral-900">
+          {personalInfo.fullName || doc.nameNotProvided}
+        </h2>
+        <div className="mx-auto mt-2 w-16 border-t-2" style={{ borderColor: accent }} />
+        <div className="mt-2 flex flex-wrap justify-center gap-x-3 gap-y-1 text-[11px] text-neutral-500">
+          <ContactItems resume={resume} />
+        </div>
+        <div className="mx-auto mt-3 w-full border-t" style={{ borderColor: accent, opacity: 0.4 }} />
+      </div>
+
+      {summary ? (
+        <section className="mt-6 text-center">
+          <h3
+            className="text-[11px] font-bold tracking-[0.2em] uppercase"
+            style={{ color: accent }}
+          >
+            {doc.summary}
+          </h3>
+          <p className="mx-auto mt-2 max-w-md leading-relaxed text-neutral-700">{summary}</p>
+        </section>
+      ) : null}
+
+      {experiences.length > 0 ? (
+        <section className="mt-6">
+          <h3
+            className="text-center text-[11px] font-bold tracking-[0.2em] uppercase"
+            style={{ color: accent }}
+          >
+            {doc.experience}
+          </h3>
+          <div className="mt-3 space-y-3">
+            {experiences.map((exp, index) => (
+              <div key={`${exp.company}-${index}`}>
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="font-bold text-neutral-900">{exp.role}</span>
+                  <span className="text-[11px] italic text-neutral-500">{exp.period}</span>
+                </div>
+                <div className="text-[11px] italic text-neutral-600">{exp.company}</div>
+                <ul className="mt-1 space-y-0.5 text-neutral-700">
+                  {exp.bulletPoints.map((point, pointIndex) => (
+                    <li key={pointIndex}>— {point}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {skills.length > 0 ? (
+        <section className="mt-6 text-center">
+          <h3
+            className="text-[11px] font-bold tracking-[0.2em] uppercase"
+            style={{ color: accent }}
+          >
+            {doc.skills}
+          </h3>
+          <p className="mt-2 text-neutral-700">{skills.join("  ·  ")}</p>
+        </section>
+      ) : null}
+
+      {education.length > 0 ? (
+        <section className="mt-6 text-center">
+          <h3
+            className="text-[11px] font-bold tracking-[0.2em] uppercase"
+            style={{ color: accent }}
+          >
+            {doc.education}
+          </h3>
+          <div className="mt-2 space-y-1.5">
+            {education.map((edu, index) => (
+              <div key={`${edu.institution}-${index}`}>
+                <div className="font-bold text-neutral-900">{edu.degree}</div>
+                <div className="italic text-neutral-600">
+                  {edu.institution}
+                  {edu.year ? ` • ${edu.year}` : ""}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+    </div>
+  );
+}
+
+function CompactPreview({ resume, accent, doc }: TemplateProps) {
+  const { personalInfo, summary, skills, experiences, education } = resume;
+
+  return (
+    <div className="p-5 text-[11px] sm:p-6">
+      <h2 className="text-base font-bold" style={{ color: accent }}>
+        {personalInfo.fullName || doc.nameNotProvided}
+      </h2>
+      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] text-neutral-500">
+        <ContactItems resume={resume} />
+      </div>
+
+      {summary ? (
+        <section className="mt-2">
+          <h3
+            className="border-b pb-0.5 text-[10px] font-bold uppercase"
+            style={{ color: accent, borderColor: accent }}
+          >
+            {doc.summary}
+          </h3>
+          <p className="mt-1 leading-snug text-neutral-700">{summary}</p>
+        </section>
+      ) : null}
+
+      {skills.length > 0 ? (
+        <section className="mt-2">
+          <h3
+            className="border-b pb-0.5 text-[10px] font-bold uppercase"
+            style={{ color: accent, borderColor: accent }}
+          >
+            {doc.skills}
+          </h3>
+          <p className="mt-1 leading-snug text-neutral-700">{skills.join("  ·  ")}</p>
+        </section>
+      ) : null}
+
+      {experiences.length > 0 ? (
+        <section className="mt-2">
+          <h3
+            className="border-b pb-0.5 text-[10px] font-bold uppercase"
+            style={{ color: accent, borderColor: accent }}
+          >
+            {doc.experience}
+          </h3>
+          <div className="mt-1 space-y-1.5">
+            {experiences.map((exp, index) => (
+              <div key={`${exp.company}-${index}`}>
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="font-semibold text-neutral-900">{exp.role}</span>
+                  <span className="text-[10px] text-neutral-500">{exp.period}</span>
+                </div>
+                <div className="text-[10px] text-neutral-600">{exp.company}</div>
+                <ul className="list-disc space-y-0 pl-3.5 text-neutral-700">
+                  {exp.bulletPoints.map((point, pointIndex) => (
+                    <li key={pointIndex}>{point}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {education.length > 0 ? (
+        <section className="mt-2">
+          <h3
+            className="border-b pb-0.5 text-[10px] font-bold uppercase"
+            style={{ color: accent, borderColor: accent }}
+          >
+            {doc.education}
+          </h3>
+          <div className="mt-1 space-y-0.5">
+            {education.map((edu, index) => (
+              <div key={`${edu.institution}-${index}`}>
+                <span className="font-semibold text-neutral-900">{edu.degree}</span>
+                <span className="text-neutral-600">
+                  {" "}
+                  — {edu.institution}
+                  {edu.year ? ` • ${edu.year}` : ""}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+    </div>
+  );
+}
+
 interface ResumePreviewProps {
   resume: OptimizedResume;
   themeColor: ThemeColorKey;
@@ -464,6 +645,10 @@ export function ResumePreview({ resume, themeColor, templateId }: ResumePreviewP
         <MinimalPreview resume={resume} accent={accent} doc={doc} />
       ) : templateId === "bold" ? (
         <BoldPreview resume={resume} accent={accent} doc={doc} />
+      ) : templateId === "elegant" ? (
+        <ElegantPreview resume={resume} accent={accent} doc={doc} />
+      ) : templateId === "compact" ? (
+        <CompactPreview resume={resume} accent={accent} doc={doc} />
       ) : (
         <ClassicPreview resume={resume} accent={accent} doc={doc} />
       )}

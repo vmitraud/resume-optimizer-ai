@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, FileText, Loader2, RotateCcw, CheckCircle2, Lock } from "lucide-react";
+import { Download, FileText, Loader2, RotateCcw, CheckCircle2, Lock, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -13,6 +13,13 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   OptimizedResume,
   THEME_COLORS,
   ThemeColorKey,
@@ -23,12 +30,16 @@ import { ResumePreview } from "@/components/resume/resume-preview";
 import { PlanStatusCard } from "@/components/resume/plan-status-card";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/components/language-provider";
+import { LANGUAGES, Language } from "@/lib/language";
 
 interface PreviewDownloadProps {
   resume: OptimizedResume;
   freeOptimizationsLeft: number;
   isSubscribed: boolean;
   onStartOver: () => void;
+  onRegenerateLanguage: (language: Language) => void;
+  isTranslating: boolean;
+  translateError: string | null;
 }
 
 export function PreviewDownload({
@@ -36,6 +47,9 @@ export function PreviewDownload({
   freeOptimizationsLeft,
   isSubscribed,
   onStartOver,
+  onRegenerateLanguage,
+  isTranslating,
+  translateError,
 }: PreviewDownloadProps) {
   const { language, t } = useLanguage();
   const preview = t("preview");
@@ -162,7 +176,7 @@ export function PreviewDownload({
               <CardTitle className="text-base">{preview.templateCardTitle}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {(Object.keys(RESUME_TEMPLATES) as ResumeTemplateKey[]).map((key) => {
                   const template = RESUME_TEMPLATES[key];
                   return (
@@ -215,6 +229,43 @@ export function PreviewDownload({
                   />
                 ))}
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">{preview.languageCardTitle}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Select
+                value={language}
+                onValueChange={(value) => onRegenerateLanguage(value as Language)}
+                disabled={isTranslating}
+              >
+                <SelectTrigger className="w-full">
+                  {isTranslating ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Globe className="h-3.5 w-3.5" />
+                  )}
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(LANGUAGES) as Language[]).map((key) => (
+                    <SelectItem key={key} value={key}>
+                      <span className="flex items-center gap-1.5">
+                        {LANGUAGES[key].label}
+                        {key !== "en" && !isSubscribed ? (
+                          <Lock className="h-3 w-3 text-muted-foreground" />
+                        ) : null}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {translateError ? (
+                <p className="mt-2 text-xs text-destructive">{translateError}</p>
+              ) : null}
             </CardContent>
           </Card>
 

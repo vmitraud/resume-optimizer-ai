@@ -758,6 +758,367 @@ function BoldTemplate({ resume, accent, doc }: TemplateProps) {
   );
 }
 
+const elegantStyles = (accent: string) =>
+  StyleSheet.create({
+    page: {
+      paddingTop: 52,
+      paddingBottom: 52,
+      paddingHorizontal: 60,
+      fontSize: 10,
+      fontFamily: "Times-Roman",
+      color: "#292524",
+    },
+    nameRow: {
+      alignItems: "center",
+      marginBottom: 4,
+    },
+    name: {
+      fontSize: 22,
+      fontFamily: "Times-Bold",
+      color: "#1c1917",
+      letterSpacing: 1,
+    },
+    rule: {
+      marginTop: 8,
+      marginBottom: 8,
+      borderBottomWidth: 1.5,
+      borderBottomColor: accent,
+    },
+    ruleThin: {
+      marginBottom: 18,
+      borderBottomWidth: 0.5,
+      borderBottomColor: accent,
+    },
+    contactRow: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "center",
+      gap: 10,
+      marginBottom: 4,
+    },
+    contactItem: {
+      fontSize: 9,
+      color: "#57534e",
+    },
+    sectionTitle: {
+      fontSize: 11,
+      fontFamily: "Times-Bold",
+      color: accent,
+      textAlign: "center",
+      letterSpacing: 2,
+      textTransform: "uppercase",
+      marginBottom: 8,
+      marginTop: 18,
+    },
+    paragraph: {
+      fontSize: 10,
+      lineHeight: 1.6,
+      color: "#44403c",
+      textAlign: "center",
+    },
+    skillsInline: {
+      fontSize: 10,
+      lineHeight: 1.6,
+      color: "#44403c",
+      textAlign: "center",
+    },
+    experienceBlock: {
+      marginBottom: 11,
+    },
+    experienceHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 1,
+    },
+    role: {
+      fontSize: 11,
+      fontFamily: "Times-Bold",
+      color: "#1c1917",
+    },
+    company: {
+      fontSize: 10,
+      fontFamily: "Times-Italic",
+      color: "#57534e",
+    },
+    period: {
+      fontSize: 9,
+      fontFamily: "Times-Italic",
+      color: "#78716c",
+    },
+    bulletText: {
+      fontSize: 9.5,
+      lineHeight: 1.5,
+      color: "#44403c",
+      marginBottom: 2,
+    },
+    educationBlock: {
+      marginBottom: 6,
+      alignItems: "center",
+    },
+    degree: {
+      fontSize: 10,
+      fontFamily: "Times-Bold",
+      color: "#1c1917",
+    },
+    institution: {
+      fontSize: 9.5,
+      fontFamily: "Times-Italic",
+      color: "#57534e",
+    },
+  });
+
+function ElegantTemplate({ resume, accent, doc }: TemplateProps) {
+  const styles = elegantStyles(accent);
+  const { personalInfo, summary, skills, experiences, education } = resume;
+
+  const contactItems = [
+    personalInfo.email,
+    personalInfo.phone,
+    personalInfo.linkedin,
+    personalInfo.location,
+  ].filter(Boolean);
+
+  return (
+    <Page size="A4" style={styles.page}>
+      <View style={styles.nameRow}>
+        <Text style={styles.name}>{personalInfo.fullName || doc.nameNotProvided}</Text>
+      </View>
+      <View style={styles.rule} />
+      <View style={styles.contactRow}>
+        {contactItems.map((item, index) => (
+          <Text key={`${item}-${index}`} style={styles.contactItem}>
+            {item}
+            {index < contactItems.length - 1 ? "  ·" : ""}
+          </Text>
+        ))}
+      </View>
+      <View style={styles.ruleThin} />
+
+      {summary ? (
+        <View>
+          <Text style={styles.sectionTitle}>{doc.summary}</Text>
+          <Text style={styles.paragraph}>{summary}</Text>
+        </View>
+      ) : null}
+
+      {experiences.length > 0 ? (
+        <View>
+          <Text style={styles.sectionTitle}>{doc.experience}</Text>
+          {experiences.map((exp, index) => (
+            <View key={`${exp.company}-${index}`} style={styles.experienceBlock} wrap={false}>
+              <View style={styles.experienceHeader}>
+                <Text style={styles.role}>{exp.role}</Text>
+                <Text style={styles.period}>{exp.period}</Text>
+              </View>
+              <Text style={styles.company}>{exp.company}</Text>
+              {exp.bulletPoints.map((point, pointIndex) => (
+                <Text key={pointIndex} style={styles.bulletText}>
+                  — {point}
+                </Text>
+              ))}
+            </View>
+          ))}
+        </View>
+      ) : null}
+
+      {skills.length > 0 ? (
+        <View>
+          <Text style={styles.sectionTitle}>{doc.skills}</Text>
+          <Text style={styles.skillsInline}>{skills.join("  ·  ")}</Text>
+        </View>
+      ) : null}
+
+      {education.length > 0 ? (
+        <View>
+          <Text style={styles.sectionTitle}>{doc.education}</Text>
+          {education.map((edu, index) => (
+            <View key={`${edu.institution}-${index}`} style={styles.educationBlock}>
+              <Text style={styles.degree}>{edu.degree}</Text>
+              <Text style={styles.institution}>
+                {edu.institution}
+                {edu.year ? ` • ${edu.year}` : ""}
+              </Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
+    </Page>
+  );
+}
+
+const compactStyles = (accent: string) =>
+  StyleSheet.create({
+    page: {
+      paddingTop: 28,
+      paddingBottom: 28,
+      paddingHorizontal: 36,
+      fontSize: 9,
+      fontFamily: "Helvetica",
+      color: "#1f2937",
+    },
+    name: {
+      fontSize: 16,
+      fontFamily: "Helvetica-Bold",
+      color: accent,
+      marginBottom: 2,
+    },
+    contactRow: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 6,
+      marginBottom: 8,
+    },
+    contactItem: {
+      fontSize: 8,
+      color: "#4b5563",
+    },
+    sectionTitle: {
+      fontSize: 9.5,
+      fontFamily: "Helvetica-Bold",
+      color: accent,
+      textTransform: "uppercase",
+      letterSpacing: 0.5,
+      marginBottom: 3,
+      marginTop: 8,
+      borderBottomWidth: 0.75,
+      borderBottomColor: accent,
+      paddingBottom: 1.5,
+    },
+    paragraph: {
+      fontSize: 8.5,
+      lineHeight: 1.35,
+      color: "#374151",
+    },
+    skillsInline: {
+      fontSize: 8.5,
+      lineHeight: 1.35,
+      color: "#374151",
+    },
+    experienceBlock: {
+      marginBottom: 5,
+    },
+    experienceHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    role: {
+      fontSize: 9,
+      fontFamily: "Helvetica-Bold",
+      color: "#111827",
+    },
+    company: {
+      fontSize: 8.5,
+      color: "#374151",
+    },
+    period: {
+      fontSize: 8,
+      color: "#6b7280",
+    },
+    bullet: {
+      flexDirection: "row",
+      marginBottom: 1,
+    },
+    bulletDot: {
+      width: 8,
+      fontSize: 8.5,
+      color: accent,
+    },
+    bulletText: {
+      flex: 1,
+      fontSize: 8.5,
+      lineHeight: 1.3,
+      color: "#374151",
+    },
+    educationBlock: {
+      marginBottom: 2.5,
+    },
+    degree: {
+      fontSize: 8.5,
+      fontFamily: "Helvetica-Bold",
+      color: "#111827",
+    },
+    institution: {
+      fontSize: 8.5,
+      color: "#4b5563",
+    },
+  });
+
+function CompactTemplate({ resume, accent, doc }: TemplateProps) {
+  const styles = compactStyles(accent);
+  const { personalInfo, summary, skills, experiences, education } = resume;
+
+  const contactItems = [
+    personalInfo.email,
+    personalInfo.phone,
+    personalInfo.linkedin,
+    personalInfo.location,
+  ].filter(Boolean);
+
+  return (
+    <Page size="A4" style={styles.page}>
+      <Text style={styles.name}>{personalInfo.fullName || doc.nameNotProvided}</Text>
+      <View style={styles.contactRow}>
+        {contactItems.map((item, index) => (
+          <Text key={`${item}-${index}`} style={styles.contactItem}>
+            {item}
+            {index < contactItems.length - 1 ? "  •" : ""}
+          </Text>
+        ))}
+      </View>
+
+      {summary ? (
+        <View>
+          <Text style={styles.sectionTitle}>{doc.summary}</Text>
+          <Text style={styles.paragraph}>{summary}</Text>
+        </View>
+      ) : null}
+
+      {skills.length > 0 ? (
+        <View>
+          <Text style={styles.sectionTitle}>{doc.skills}</Text>
+          <Text style={styles.skillsInline}>{skills.join("  ·  ")}</Text>
+        </View>
+      ) : null}
+
+      {experiences.length > 0 ? (
+        <View>
+          <Text style={styles.sectionTitle}>{doc.experience}</Text>
+          {experiences.map((exp, index) => (
+            <View key={`${exp.company}-${index}`} style={styles.experienceBlock} wrap={false}>
+              <View style={styles.experienceHeader}>
+                <Text style={styles.role}>{exp.role}</Text>
+                <Text style={styles.period}>{exp.period}</Text>
+              </View>
+              <Text style={styles.company}>{exp.company}</Text>
+              {exp.bulletPoints.map((point, pointIndex) => (
+                <View key={pointIndex} style={styles.bullet}>
+                  <Text style={styles.bulletDot}>•</Text>
+                  <Text style={styles.bulletText}>{point}</Text>
+                </View>
+              ))}
+            </View>
+          ))}
+        </View>
+      ) : null}
+
+      {education.length > 0 ? (
+        <View>
+          <Text style={styles.sectionTitle}>{doc.education}</Text>
+          {education.map((edu, index) => (
+            <View key={`${edu.institution}-${index}`} style={styles.educationBlock}>
+              <Text style={styles.degree}>{edu.degree}</Text>
+              <Text style={styles.institution}>
+                {edu.institution}
+                {edu.year ? ` • ${edu.year}` : ""}
+              </Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
+    </Page>
+  );
+}
+
 interface ResumeDocumentProps {
   resume: OptimizedResume;
   themeColor: ThemeColorKey;
@@ -777,6 +1138,10 @@ export function ResumeDocument({ resume, themeColor, templateId, language }: Res
         <MinimalTemplate resume={resume} accent={accent} doc={doc} />
       ) : templateId === "bold" ? (
         <BoldTemplate resume={resume} accent={accent} doc={doc} />
+      ) : templateId === "elegant" ? (
+        <ElegantTemplate resume={resume} accent={accent} doc={doc} />
+      ) : templateId === "compact" ? (
+        <CompactTemplate resume={resume} accent={accent} doc={doc} />
       ) : (
         <ClassicTemplate resume={resume} accent={accent} doc={doc} />
       )}

@@ -49,6 +49,13 @@ export const optimizeRequestSchema = z.object({
 
 export type OptimizeRequest = z.infer<typeof optimizeRequestSchema>;
 
+export const translateRequestSchema = z.object({
+  resume: optimizedResumeSchema,
+  language: languageSchema,
+});
+
+export type TranslateRequest = z.infer<typeof translateRequestSchema>;
+
 export const THEME_COLORS = {
   slate: "#334155",
   blue: "#2563eb",
@@ -64,6 +71,8 @@ export const RESUME_TEMPLATES = {
   modern: { name: "Modern", isPremium: true },
   minimal: { name: "Minimal", isPremium: true },
   bold: { name: "Bold", isPremium: true },
+  elegant: { name: "Elegant", isPremium: true },
+  compact: { name: "Compact", isPremium: true },
 } as const;
 
 export type ResumeTemplateKey = keyof typeof RESUME_TEMPLATES;

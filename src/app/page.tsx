@@ -9,15 +9,18 @@ import { PlanStatusCard } from "@/components/resume/plan-status-card";
 import { OptimizedResume } from "@/lib/schema";
 import { FREE_OPTIMIZATIONS_LIMIT, USAGE_STORAGE_KEY } from "@/lib/constants";
 import { useLanguage } from "@/components/language-provider";
+import { Language } from "@/lib/language";
 
 type Step = "input" | "loading" | "result";
 
 export default function Home() {
-  const { language, t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const page = t("page");
   const [step, setStep] = useState<Step>("input");
   const [error, setError] = useState<string | null>(null);
   const [resume, setResume] = useState<OptimizedResume | null>(null);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [translateError, setTranslateError] = useState<string | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [checkoutNotice, setCheckoutNotice] = useState<"success" | "error" | null>(null);
   const [usageCount, setUsageCount] = useState<number>(() => {
@@ -106,6 +109,41 @@ export default function Home() {
     setStep("input");
   };
 
+  const handleRegenerateLanguage = async (newLanguage: Language) => {
+    if (!resume) return;
+
+    if (!isSubscribed && newLanguage !== "en") {
+      setTranslateError(page.languageProRequired);
+      return;
+    }
+
+    setIsTranslating(true);
+    setTranslateError(null);
+
+    try {
+      const response = await fetch("/api/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resume, language: newLanguage }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok || !data) {
+        throw new Error(data?.error ?? page.optimizeErrorFallback);
+      }
+
+      setResume(data.resume);
+      setLanguage(newLanguage);
+    } catch (err) {
+      setTranslateError(
+        err instanceof Error ? err.message : page.optimizeErrorFallback,
+      );
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
   return (
     <div className="flex flex-1 flex-col">
       <HeroSection isSubscribed={isSubscribed} />
@@ -137,6 +175,9 @@ export default function Home() {
             freeOptimizationsLeft={freeOptimizationsLeft}
             isSubscribed={isSubscribed}
             onStartOver={handleStartOver}
+            onRegenerateLanguage={handleRegenerateLanguage}
+            isTranslating={isTranslating}
+            translateError={translateError}
           />
         ) : null}
       </main>
