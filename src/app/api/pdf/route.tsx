@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
-import { pdfRequestSchema } from "@/lib/schema";
+import { pdfRequestSchema, RESUME_TEMPLATES } from "@/lib/schema";
 import { ResumeDocument } from "@/components/pdf/resume-document";
+import { getIsSubscribed } from "@/lib/subscription";
 
 export const runtime = "nodejs";
 
@@ -25,6 +26,17 @@ export async function POST(request: Request) {
   }
 
   const { resume, themeColor, templateId } = parsed.data;
+
+  if (RESUME_TEMPLATES[templateId].isPremium) {
+    const isSubscribed = await getIsSubscribed();
+    if (!isSubscribed) {
+      return NextResponse.json(
+        { error: `The ${RESUME_TEMPLATES[templateId].name} template requires the Unlimited Plan.` },
+        { status: 403 },
+      );
+    }
+  }
+
   const document = (
     <ResumeDocument resume={resume} themeColor={themeColor} templateId={templateId} />
   );

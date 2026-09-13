@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HeroSection } from "@/components/resume/hero-section";
 import { ResumeInputForm } from "@/components/resume/resume-input-form";
 import { LoadingState } from "@/components/resume/loading-state";
@@ -14,6 +14,8 @@ export default function Home() {
   const [step, setStep] = useState<Step>("input");
   const [error, setError] = useState<string | null>(null);
   const [resume, setResume] = useState<OptimizedResume | null>(null);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [checkoutNotice, setCheckoutNotice] = useState<string | null>(null);
   const [usageCount, setUsageCount] = useState<number>(() => {
     if (typeof window === "undefined") return 0;
     try {
@@ -24,7 +26,39 @@ export default function Home() {
     }
   });
 
+  useEffect(() => {
+    fetch("/api/subscription-status")
+      .then((res) => res.json())
+      .then((data) => setIsSubscribed(Boolean(data?.isSubscribed)))
+      .catch(() => setIsSubscribed(false));
+
+    const params = new URLSearchParams(window.location.search);
+    const checkout = params.get("checkout");
+    if (checkout === "success") {
+      setCheckoutNotice("You're subscribed! Unlimited optimizations and all templates are now unlocked.");
+    } else if (checkout === "error") {
+      setCheckoutNotice("We couldn't confirm your payment. If you were charged, please contact support.");
+    } else if (checkout === "cancelled") {
+      setCheckoutNotice(null);
+    }
+    if (checkout) {
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
+
+  const freeOptimizationsLeft = Math.max(
+    0,
+    FREE_OPTIMIZATIONS_LIMIT - usageCount,
+  );
+
   const handleSubmit = async (resumeText: string, jobDescription: string) => {
+    if (!isSubscribed && freeOptimizationsLeft <= 0) {
+      setError(
+        "You've used all your free optimizations. Upgrade to the Unlimited Plan to keep going.",
+      );
+      return;
+    }
+
     setError(null);
     setStep("loading");
 
@@ -44,12 +78,14 @@ export default function Home() {
       setResume(data.resume);
       setStep("result");
 
-      const nextCount = usageCount + 1;
-      setUsageCount(nextCount);
-      try {
-        window.localStorage.setItem(USAGE_STORAGE_KEY, String(nextCount));
-      } catch {
-        // ignore failure to persist usage count
+      if (!isSubscribed) {
+        const nextCount = usageCount + 1;
+        setUsageCount(nextCount);
+        try {
+          window.localStorage.setItem(USAGE_STORAGE_KEY, String(nextCount));
+        } catch {
+          // ignore failure to persist usage count
+        }
       }
     } catch (err) {
       setError(
@@ -65,15 +101,15 @@ export default function Home() {
     setStep("input");
   };
 
-  const freeOptimizationsLeft = Math.max(
-    0,
-    FREE_OPTIMIZATIONS_LIMIT - usageCount,
-  );
-
   return (
     <div className="flex flex-1 flex-col">
       <HeroSection />
       <main className="flex flex-1 flex-col justify-center px-4 py-10 sm:py-14">
+        {checkoutNotice ? (
+          <div className="mx-auto mb-6 w-full max-w-4xl rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
+            {checkoutNotice}
+          </div>
+        ) : null}
         {step === "input" ? (
           <ResumeInputForm onSubmit={handleSubmit} errorMessage={error} />
         ) : null}
@@ -82,6 +118,7 @@ export default function Home() {
           <PreviewDownload
             resume={resume}
             freeOptimizationsLeft={freeOptimizationsLeft}
+            isSubscribed={isSubscribed}
             onStartOver={handleStartOver}
           />
         ) : null}

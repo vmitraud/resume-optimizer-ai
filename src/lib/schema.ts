@@ -72,3 +72,12 @@ export const pdfRequestSchema = z.object({
 });
 
 export type PdfRequest = z.infer<typeof pdfRequestSchema>;
+
+export const docxRequestSchema = z.object({
+  resume: optimizedResumeSchema,
+  themeColor: z.enum(
+    Object.keys(THEME_COLORS) as [ThemeColorKey, ...ThemeColorKey[]],
+  ),
+});
+
+export type DocxRequest = z.infer<typeof docxRequestSchema>;

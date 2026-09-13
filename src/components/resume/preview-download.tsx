@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, Loader2, RotateCcw, Zap, CheckCircle2, Lock } from "lucide-react";
+import { Download, FileText, Loader2, RotateCcw, Zap, CheckCircle2, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -26,30 +26,80 @@ import { cn } from "@/lib/utils";
 interface PreviewDownloadProps {
   resume: OptimizedResume;
   freeOptimizationsLeft: number;
+  isSubscribed: boolean;
   onStartOver: () => void;
 }
 
 export function PreviewDownload({
   resume,
   freeOptimizationsLeft,
+  isSubscribed,
   onStartOver,
 }: PreviewDownloadProps) {
   const [themeColor, setThemeColor] = useState<ThemeColorKey>("blue");
   const [templateId, setTemplateId] = useState<ResumeTemplateKey>("classic");
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadingFormat, setDownloadingFormat] = useState<"pdf" | "docx" | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  const isPremiumTemplateSelected = RESUME_TEMPLATES[templateId].isPremium;
+  const isPremiumTemplateLocked = RESUME_TEMPLATES[templateId].isPremium && !isSubscribed;
 
-  const handleDownload = async () => {
-    if (isPremiumTemplateSelected) {
+  const handleSubscribe = async () => {
+    setIsRedirecting(true);
+    try {
+      const response = await fetch("/api/checkout", { method: "POST" });
+      const data = await response.json();
+      if (!response.ok || !data?.url) {
+        throw new Error(data?.error ?? "Could not start checkout.");
+      }
+      window.location.href = data.url;
+    } catch (error) {
+      setDownloadError(
+        error instanceof Error ? error.message : "Could not start checkout.",
+      );
+      setIsRedirecting(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    setIsRedirecting(true);
+    try {
+      const response = await fetch("/api/billing-portal", { method: "POST" });
+      const data = await response.json();
+      if (!response.ok || !data?.url) {
+        throw new Error(data?.error ?? "Could not open billing management.");
+      }
+      window.location.href = data.url;
+    } catch (error) {
+      setDownloadError(
+        error instanceof Error ? error.message : "Could not open billing management.",
+      );
+      setIsRedirecting(false);
+    }
+  };
+
+  const downloadFile = async (blob: Blob, extension: string) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${(resume.personalInfo.fullName || "resume")
+      .toLowerCase()
+      .replace(/\s+/g, "-")}-optimized.${extension}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadPdf = async () => {
+    if (isPremiumTemplateLocked) {
       setDownloadError(
         `The ${RESUME_TEMPLATES[templateId].name} template requires the Unlimited Plan.`,
       );
       return;
     }
 
-    setIsDownloading(true);
+    setDownloadingFormat("pdf");
     setDownloadError(null);
     try {
       const response = await fetch("/api/pdf", {
@@ -63,23 +113,43 @@ export function PreviewDownload({
         throw new Error(data?.error ?? "Failed to generate the PDF.");
       }
 
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${(resume.personalInfo.fullName || "resume")
-        .toLowerCase()
-        .replace(/\s+/g, "-")}-optimized.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      await downloadFile(await response.blob(), "pdf");
     } catch (error) {
       setDownloadError(
         error instanceof Error ? error.message : "Failed to generate the PDF.",
       );
     } finally {
-      setIsDownloading(false);
+      setDownloadingFormat(null);
+    }
+  };
+
+  const handleDownloadDocx = async () => {
+    if (!isSubscribed) {
+      setDownloadError("DOCX export requires the Unlimited Plan.");
+      return;
+    }
+
+    setDownloadingFormat("docx");
+    setDownloadError(null);
+    try {
+      const response = await fetch("/api/docx", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resume, themeColor }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.error ?? "Failed to generate the DOCX file.");
+      }
+
+      await downloadFile(await response.blob(), "docx");
+    } catch (error) {
+      setDownloadError(
+        error instanceof Error ? error.message : "Failed to generate the DOCX file.",
+      );
+    } finally {
+      setDownloadingFormat(null);
     }
   };
 
@@ -188,19 +258,34 @@ export function PreviewDownload({
             <Button
               size="lg"
               className="w-full"
-              onClick={handleDownload}
-              disabled={isDownloading}
+              onClick={handleDownloadPdf}
+              disabled={downloadingFormat !== null}
             >
-              {isDownloading ? (
+              {downloadingFormat === "pdf" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
-              ) : isPremiumTemplateSelected ? (
+              ) : isPremiumTemplateLocked ? (
                 <Lock className="h-4 w-4" />
               ) : (
                 <Download className="h-4 w-4" />
               )}
-              {isPremiumTemplateSelected
+              {isPremiumTemplateLocked
                 ? "Unlock to Download"
                 : "Download Optimized PDF"}
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={handleDownloadDocx}
+              disabled={downloadingFormat !== null}
+            >
+              {downloadingFormat === "docx" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : !isSubscribed ? (
+                <Lock className="h-4 w-4" />
+              ) : (
+                <FileText className="h-4 w-4" />
+              )}
+              {isSubscribed ? "Download as DOCX" : "Download as DOCX (Pro)"}
             </Button>
             <Button
               variant="outline"
@@ -218,21 +303,52 @@ export function PreviewDownload({
           <Alert className="border-primary/30 bg-primary/5">
             <Zap className="h-4 w-4 text-primary" />
             <AlertTitle className="flex items-center gap-2">
-              {freeOptimizationsLeft > 0
-                ? `${freeOptimizationsLeft} free optimization${freeOptimizationsLeft === 1 ? "" : "s"} left`
-                : "Free limit reached"}
+              {isSubscribed
+                ? "Unlimited Plan active"
+                : freeOptimizationsLeft > 0
+                  ? `${freeOptimizationsLeft} free optimization${freeOptimizationsLeft === 1 ? "" : "s"} left`
+                  : "Free limit reached"}
               <Badge variant="secondary">Unlimited Plan</Badge>
             </AlertTitle>
             <AlertDescription>
-              Unlock unlimited optimizations, more templates, and priority
-              processing for{" "}
-              <span className="font-semibold text-foreground">
-                $4.99/week
-              </span>
-              .
-              <Button size="sm" className="mt-3 w-full">
-                Subscribe to Unlimited Plan
-              </Button>
+              {isSubscribed ? (
+                <>
+                  You have unlimited optimizations, every template, and
+                  DOCX export unlocked.
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="mt-3 w-full"
+                    onClick={handleManageSubscription}
+                    disabled={isRedirecting}
+                  >
+                    {isRedirecting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : null}
+                    Manage subscription
+                  </Button>
+                </>
+              ) : (
+                <>
+                  Unlock unlimited optimizations, more templates, DOCX
+                  export, and priority processing for{" "}
+                  <span className="font-semibold text-foreground">
+                    $4.99/month
+                  </span>
+                  .
+                  <Button
+                    size="sm"
+                    className="mt-3 w-full"
+                    onClick={handleSubscribe}
+                    disabled={isRedirecting}
+                  >
+                    {isRedirecting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : null}
+                    Subscribe to Unlimited Plan
+                  </Button>
+                </>
+              )}
             </AlertDescription>
           </Alert>
         </div>
