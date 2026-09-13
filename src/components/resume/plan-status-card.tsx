@@ -84,7 +84,7 @@ export function PlanStatusCard({
         ) : (
           <>
             {preview.unsubscribedDescription}{" "}
-            <span className="font-semibold text-foreground">$4.99/month</span>.
+            <span className="font-semibold text-foreground">$2.99/month</span>.
             <Button
               size="sm"
               className="mt-3 w-full"

@@ -162,7 +162,7 @@ export function PreviewDownload({
               <CardTitle className="text-base">{preview.templateCardTitle}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {(Object.keys(RESUME_TEMPLATES) as ResumeTemplateKey[]).map((key) => {
                   const template = RESUME_TEMPLATES[key];
                   return (

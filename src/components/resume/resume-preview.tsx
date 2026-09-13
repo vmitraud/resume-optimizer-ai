@@ -337,6 +337,114 @@ function MinimalPreview({ resume, accent, doc }: TemplateProps) {
   );
 }
 
+function BoldPreview({ resume, accent, doc }: TemplateProps) {
+  const { personalInfo, summary, skills, experiences, education } = resume;
+
+  return (
+    <div>
+      <div className="p-6 text-white sm:p-8" style={{ backgroundColor: accent }}>
+        <h2 className="text-2xl font-bold">
+          {personalInfo.fullName || doc.nameNotProvided}
+        </h2>
+        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs opacity-95">
+          <ContactItems resume={resume} />
+        </div>
+      </div>
+
+      <div className="p-6 sm:p-8">
+        {summary ? (
+          <section>
+            <h3
+              className="border-l-4 pl-2.5 text-xs font-bold tracking-wide uppercase"
+              style={{ color: accent, borderColor: accent }}
+            >
+              {doc.summary}
+            </h3>
+            <p className="mt-2 leading-relaxed text-neutral-700">{summary}</p>
+          </section>
+        ) : null}
+
+        {skills.length > 0 ? (
+          <section className="mt-5">
+            <h3
+              className="border-l-4 pl-2.5 text-xs font-bold tracking-wide uppercase"
+              style={{ color: accent, borderColor: accent }}
+            >
+              {doc.skills}
+            </h3>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {skills.map((skill, index) => (
+                <span
+                  key={`${skill}-${index}`}
+                  className="rounded px-2 py-0.5 text-[11px] text-white"
+                  style={{ backgroundColor: accent }}
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {experiences.length > 0 ? (
+          <section className="mt-5">
+            <h3
+              className="border-l-4 pl-2.5 text-xs font-bold tracking-wide uppercase"
+              style={{ color: accent, borderColor: accent }}
+            >
+              {doc.experience}
+            </h3>
+            <div className="mt-2 space-y-3">
+              {experiences.map((exp, index) => (
+                <div key={`${exp.company}-${index}`}>
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="font-semibold text-neutral-900">
+                      {exp.role}
+                    </span>
+                    <span className="text-[11px] text-neutral-500">
+                      {exp.period}
+                    </span>
+                  </div>
+                  <div style={{ color: accent }}>{exp.company}</div>
+                  <ul className="mt-1 list-disc space-y-0.5 pl-4 text-neutral-700">
+                    {exp.bulletPoints.map((point, pointIndex) => (
+                      <li key={pointIndex}>{point}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {education.length > 0 ? (
+          <section className="mt-5">
+            <h3
+              className="border-l-4 pl-2.5 text-xs font-bold tracking-wide uppercase"
+              style={{ color: accent, borderColor: accent }}
+            >
+              {doc.education}
+            </h3>
+            <div className="mt-2 space-y-1.5">
+              {education.map((edu, index) => (
+                <div key={`${edu.institution}-${index}`}>
+                  <div className="font-semibold text-neutral-900">
+                    {edu.degree}
+                  </div>
+                  <div className="text-neutral-600">
+                    {edu.institution}
+                    {edu.year ? ` • ${edu.year}` : ""}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 interface ResumePreviewProps {
   resume: OptimizedResume;
   themeColor: ThemeColorKey;
@@ -354,6 +462,8 @@ export function ResumePreview({ resume, themeColor, templateId }: ResumePreviewP
         <ModernPreview resume={resume} accent={accent} doc={doc} />
       ) : templateId === "minimal" ? (
         <MinimalPreview resume={resume} accent={accent} doc={doc} />
+      ) : templateId === "bold" ? (
+        <BoldPreview resume={resume} accent={accent} doc={doc} />
       ) : (
         <ClassicPreview resume={resume} accent={accent} doc={doc} />
       )}

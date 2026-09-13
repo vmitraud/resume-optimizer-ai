@@ -1,7 +1,16 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Sparkles, FileText, Briefcase, Upload, Loader2 } from "lucide-react";
+import {
+  Sparkles,
+  FileText,
+  Briefcase,
+  Upload,
+  Loader2,
+  Pencil,
+  X,
+  CheckCircle2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -24,6 +33,12 @@ interface ResumeInputFormProps {
 
 const MIN_LENGTH = 50;
 const ACCEPTED_FILE_TYPES = ".pdf,.docx,.txt";
+const ACCEPTED_EXTENSIONS = [".pdf", ".docx", ".txt"];
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  return `${(bytes / 1024).toFixed(0)} KB`;
+}
 
 export function ResumeInputForm({
   onSubmit,
@@ -34,8 +49,10 @@ export function ResumeInputForm({
   const form = t("form");
   const [resumeText, setResumeText] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [uploadedFile, setUploadedFile] = useState<{ name: string; size: number } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const [attempted, setAttempted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -62,10 +79,14 @@ export function ResumeInputForm({
     onSubmit(resumeText.trim(), jobDescription.trim());
   };
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
+  const uploadFile = async (file: File) => {
+    const hasAcceptedExtension = ACCEPTED_EXTENSIONS.some((ext) =>
+      file.name.toLowerCase().endsWith(ext),
+    );
+    if (!hasAcceptedExtension) {
+      setUploadError(form.uploadErrorFallback);
+      return;
+    }
 
     setUploadError(null);
     setIsUploading(true);
@@ -86,6 +107,7 @@ export function ResumeInputForm({
       }
 
       setResumeText(data.text);
+      setUploadedFile({ name: file.name, size: file.size });
     } catch (err) {
       setUploadError(
         err instanceof Error ? err.message : form.uploadErrorFallback,
@@ -93,6 +115,30 @@ export function ResumeInputForm({
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (file) uploadFile(file);
+  };
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDragging(false);
+    if (disabled || isUploading) return;
+    const file = event.dataTransfer.files?.[0];
+    if (file) uploadFile(file);
+  };
+
+  const handleRemoveFile = () => {
+    setUploadedFile(null);
+    setResumeText("");
+    setUploadError(null);
+  };
+
+  const handleEditFile = () => {
+    setUploadedFile(null);
   };
 
   return (
@@ -144,17 +190,79 @@ export function ResumeInputForm({
                   onChange={handleFileChange}
                 />
               </div>
-              <Textarea
-                id="resumeText"
-                placeholder={form.resumePlaceholder}
-                className={cn(
-                  "min-h-[280px] resize-y",
-                  attempted && isResumeMissing && "border-destructive",
+
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  if (!disabled && !isUploading) setIsDragging(true);
+                }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={handleDrop}
+                className="relative"
+              >
+                {uploadedFile ? (
+                  <div
+                    className={cn(
+                      "flex min-h-[280px] flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed bg-accent/30 p-6 text-center transition-colors",
+                      attempted && isResumeMissing && "border-destructive",
+                    )}
+                  >
+                    <CheckCircle2 className="h-8 w-8 text-primary" />
+                    <div>
+                      <p className="font-medium break-all">{uploadedFile.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatFileSize(uploadedFile.size)} · {form.fileExtracted}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleEditFile}
+                        disabled={disabled}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                        {form.editFile}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleRemoveFile}
+                        disabled={disabled}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                        {form.removeFile}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <Textarea
+                      id="resumeText"
+                      placeholder={form.resumePlaceholder}
+                      className={cn(
+                        "min-h-[280px] resize-y rounded-lg bg-muted/30 shadow-inner transition-colors",
+                        isDragging && "border-primary bg-primary/5",
+                        attempted && isResumeMissing && "border-destructive",
+                      )}
+                      value={resumeText}
+                      onChange={(e) => setResumeText(e.target.value)}
+                      disabled={disabled || isUploading}
+                    />
+                    <p className="mt-1.5 text-xs text-muted-foreground">
+                      {form.dropHint}
+                    </p>
+                  </>
                 )}
-                value={resumeText}
-                onChange={(e) => setResumeText(e.target.value)}
-                disabled={disabled || isUploading}
-              />
+                {isDragging && !uploadedFile ? (
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-lg border-2 border-dashed border-primary bg-primary/10">
+                    <Upload className="h-8 w-8 text-primary" />
+                  </div>
+                ) : null}
+              </div>
+
               {uploadError ? (
                 <p className="text-xs text-destructive">{uploadError}</p>
               ) : null}
@@ -178,7 +286,7 @@ export function ResumeInputForm({
                 id="jobDescription"
                 placeholder={form.jobPlaceholder}
                 className={cn(
-                  "min-h-[280px] resize-y",
+                  "min-h-[280px] resize-y rounded-lg bg-muted/30 shadow-inner transition-colors",
                   attempted && isJobDescriptionMissing && "border-destructive",
                 )}
                 value={jobDescription}

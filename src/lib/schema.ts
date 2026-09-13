@@ -63,6 +63,7 @@ export const RESUME_TEMPLATES = {
   classic: { name: "Classic", isPremium: false },
   modern: { name: "Modern", isPremium: true },
   minimal: { name: "Minimal", isPremium: true },
+  bold: { name: "Bold", isPremium: true },
 } as const;
 
 export type ResumeTemplateKey = keyof typeof RESUME_TEMPLATES;

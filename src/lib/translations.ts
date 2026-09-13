@@ -27,6 +27,10 @@ export const translations = {
         "Please add the job description so we can compare it with your resume and optimize it.",
       validationResume: "Please paste or upload your resume before optimizing.",
       uploadErrorFallback: "Could not read this file.",
+      dropHint: "or drag and drop a PDF, DOCX, or TXT file",
+      editFile: "Edit as text",
+      removeFile: "Remove",
+      fileExtracted: "Text extracted successfully",
     },
     loading: {
       messages: [
@@ -117,6 +121,10 @@ export const translations = {
         "Adicione a descrição da vaga para que possamos compará-la com seu currículo e otimizá-lo.",
       validationResume: "Cole ou envie seu currículo antes de otimizar.",
       uploadErrorFallback: "Não foi possível ler este arquivo.",
+      dropHint: "ou arraste e solte um arquivo PDF, DOCX ou TXT",
+      editFile: "Editar como texto",
+      removeFile: "Remover",
+      fileExtracted: "Texto extraído com sucesso",
     },
     loading: {
       messages: [
@@ -208,6 +216,10 @@ export const translations = {
       validationResume:
         "Bitte fügen Sie Ihren Lebenslauf ein oder laden Sie ihn hoch, bevor Sie optimieren.",
       uploadErrorFallback: "Diese Datei konnte nicht gelesen werden.",
+      dropHint: "oder ziehen Sie eine PDF-, DOCX- oder TXT-Datei hierher",
+      editFile: "Als Text bearbeiten",
+      removeFile: "Entfernen",
+      fileExtracted: "Text erfolgreich extrahiert",
     },
     loading: {
       messages: [
