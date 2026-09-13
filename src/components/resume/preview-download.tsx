@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, FileText, Loader2, RotateCcw, Zap, CheckCircle2, Lock } from "lucide-react";
+import { Download, FileText, Loader2, RotateCcw, CheckCircle2, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -12,7 +12,6 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   OptimizedResume,
   THEME_COLORS,
@@ -21,6 +20,7 @@ import {
   ResumeTemplateKey,
 } from "@/lib/schema";
 import { ResumePreview } from "@/components/resume/resume-preview";
+import { PlanStatusCard } from "@/components/resume/plan-status-card";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/components/language-provider";
 
@@ -43,43 +43,8 @@ export function PreviewDownload({
   const [templateId, setTemplateId] = useState<ResumeTemplateKey>("classic");
   const [downloadingFormat, setDownloadingFormat] = useState<"pdf" | "docx" | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
-  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const isPremiumTemplateLocked = RESUME_TEMPLATES[templateId].isPremium && !isSubscribed;
-
-  const handleSubscribe = async () => {
-    setIsRedirecting(true);
-    try {
-      const response = await fetch("/api/checkout", { method: "POST" });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data?.url) {
-        throw new Error(data?.error ?? preview.checkoutFailFallback);
-      }
-      window.location.href = data.url;
-    } catch (error) {
-      setDownloadError(
-        error instanceof Error ? error.message : preview.checkoutFailFallback,
-      );
-      setIsRedirecting(false);
-    }
-  };
-
-  const handleManageSubscription = async () => {
-    setIsRedirecting(true);
-    try {
-      const response = await fetch("/api/billing-portal", { method: "POST" });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data?.url) {
-        throw new Error(data?.error ?? preview.billingFailFallback);
-      }
-      window.location.href = data.url;
-    } catch (error) {
-      setDownloadError(
-        error instanceof Error ? error.message : preview.billingFailFallback,
-      );
-      setIsRedirecting(false);
-    }
-  };
 
   const downloadFile = async (blob: Blob, extension: string) => {
     const url = URL.createObjectURL(blob);
@@ -297,55 +262,10 @@ export function PreviewDownload({
             ) : null}
           </div>
 
-          <Alert className="border-primary/30 bg-primary/5">
-            <Zap className="h-4 w-4 text-primary" />
-            <AlertTitle className="flex items-center gap-2">
-              {isSubscribed
-                ? preview.unlimitedActive
-                : freeOptimizationsLeft > 0
-                  ? preview.freeLeft(freeOptimizationsLeft)
-                  : preview.freeLimitReached}
-              <Badge variant="secondary">{preview.planBadge}</Badge>
-            </AlertTitle>
-            <AlertDescription>
-              {isSubscribed ? (
-                <>
-                  {preview.subscribedDescription}
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="mt-3 w-full"
-                    onClick={handleManageSubscription}
-                    disabled={isRedirecting}
-                  >
-                    {isRedirecting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : null}
-                    {preview.manageSubscription}
-                  </Button>
-                </>
-              ) : (
-                <>
-                  {preview.unsubscribedDescription}{" "}
-                  <span className="font-semibold text-foreground">
-                    $4.99/month
-                  </span>
-                  .
-                  <Button
-                    size="sm"
-                    className="mt-3 w-full"
-                    onClick={handleSubscribe}
-                    disabled={isRedirecting}
-                  >
-                    {isRedirecting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : null}
-                    {preview.subscribeButton}
-                  </Button>
-                </>
-              )}
-            </AlertDescription>
-          </Alert>
+          <PlanStatusCard
+            freeOptimizationsLeft={freeOptimizationsLeft}
+            isSubscribed={isSubscribed}
+          />
         </div>
       </div>
     </div>

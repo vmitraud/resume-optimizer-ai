@@ -5,6 +5,7 @@ import { HeroSection } from "@/components/resume/hero-section";
 import { ResumeInputForm } from "@/components/resume/resume-input-form";
 import { LoadingState } from "@/components/resume/loading-state";
 import { PreviewDownload } from "@/components/resume/preview-download";
+import { PlanStatusCard } from "@/components/resume/plan-status-card";
 import { OptimizedResume } from "@/lib/schema";
 import { FREE_OPTIMIZATIONS_LIMIT, USAGE_STORAGE_KEY } from "@/lib/constants";
 import { useLanguage } from "@/components/language-provider";
@@ -110,7 +111,15 @@ export default function Home() {
           </div>
         ) : null}
         {step === "input" ? (
-          <ResumeInputForm onSubmit={handleSubmit} errorMessage={error} />
+          <div className="mx-auto w-full max-w-4xl space-y-6">
+            <ResumeInputForm onSubmit={handleSubmit} errorMessage={error} />
+            {!isSubscribed && freeOptimizationsLeft <= 0 ? (
+              <PlanStatusCard
+                freeOptimizationsLeft={freeOptimizationsLeft}
+                isSubscribed={isSubscribed}
+              />
+            ) : null}
+          </div>
         ) : null}
         {step === "loading" ? <LoadingState /> : null}
         {step === "result" && resume ? (
